@@ -34,7 +34,7 @@ const SurveyScreen = ({ navigation, route }) => {
         setLoading(true); // Ativa o estado de carregamento
 
         try {
-            const response = await axios.post('http://imogo.juk.re:8000/api/v1/usuarios/', {
+            const response = await axios.post('https://imogo.juk.re/api/v1/usuarios/', {
                 email: email,
                 nome_social: fullName,
                 origem: selectedOption || 'Não informado', // Envia "Não informado" se nenhuma opção for selecionada
