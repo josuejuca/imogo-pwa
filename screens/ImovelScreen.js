@@ -419,6 +419,7 @@ const styles = StyleSheet.create({
         marginBottom: Platform.select({
             ios: 10,
             android: 8,
+            web: 8,
         }),
     },
     location: {
@@ -427,6 +428,7 @@ const styles = StyleSheet.create({
         marginBottom: Platform.select({
             ios: 10,
             android: 8,
+            web: 8,
         }),
     },
     details: {
@@ -435,6 +437,7 @@ const styles = StyleSheet.create({
         marginBottom: Platform.select({
             ios: 5,
             android: 4,
+            web:4
         }),
     },
     secondarydetails: {
@@ -443,6 +446,7 @@ const styles = StyleSheet.create({
         marginBottom: Platform.select({
             ios: 5,
             android: 4,
+            web:4
         }),
     },
     // Para o conteúdo ocupar 90% e ficar centralizado, ajuste o section
@@ -524,10 +528,13 @@ const styles = StyleSheet.create({
 
     // estilo do avaliador
     safeArea: {
-
         flex: 1,
         backgroundColor: '#F5F5F5',
-        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 1 : 4, // Maior espaçamento para a barra de status
+        paddingTop: Platform.select({
+            android: StatusBar.currentHeight + 1, // Para Android
+            ios: 4, // Para iOS
+            web: 20, // Maior espaçamento no topo para Web
+        }),
     },
     // estilo das fotos
     container: {
