@@ -460,6 +460,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         color: '#333',
     },
+    // Orientação do Sol - Ajustes para Web
     orientationBox: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -468,19 +469,28 @@ const styles = StyleSheet.create({
         padding: Platform.select({
             ios: 15,
             android: 12,
+            web: 20, // Aumenta o padding para web
         }),
-        borderRadius: 25, // Mais arredondado
+        borderRadius: 25, // Mantém o arredondado
+        marginBottom: 20, // Espaçamento extra abaixo do campo
     },
     orientationText: {
-        fontSize: 16,
+        fontSize: Platform.select({
+            ios: 16,
+            android: 16,
+            web: 18, // Aumenta o tamanho da fonte para web
+        }),
         fontWeight: 'bold',
         color: '#FFFFFF',
+        marginRight: 10, // Espaçamento entre o texto e o ícone
     },
     icon: {
         width: 30,
         height: 30,
-        tintColor: '#FFFFFF', // Garantindo que os ícones fiquem brancos
+        tintColor: '#FFFFFF',
+        marginLeft: 10, // Espaçamento entre o ícone e o texto
     },
+    
     tagContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
