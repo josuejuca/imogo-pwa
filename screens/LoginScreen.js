@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,17 +10,16 @@ import {
   StatusBar,
   Platform,
   KeyboardAvoidingView,
-  Keyboard,
   TouchableWithoutFeedback,
   ScrollView,
   Animated,
   StyleSheet,
-  Alert,
+  Alert as MobileAlert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Checkbox from 'expo-checkbox';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios'; // Importando o axios
+import axios from 'axios';
 
 const { width, height } = Dimensions.get('window');
 
@@ -29,10 +28,8 @@ const Login = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [remember, setRemember] = useState(true);
-  const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [emailError, setEmailError] = useState('');
 
-  // Animação para o botão
   const fadeAnim = useRef(new Animated.Value(0.5)).current;
 
   // Validação de email usando regex
@@ -49,7 +46,7 @@ const Login = ({ navigation }) => {
       console.error('Error saving user ID', error);
     }
   };
-  // Função para remover o login do AsyncStorage
+
   const removeLoginInfo = async () => {
     try {
       await AsyncStorage.removeItem('usuario_id');
@@ -58,7 +55,15 @@ const Login = ({ navigation }) => {
     }
   };
 
-  // Função para lidar com o login via API utilizando axios
+  // Função para mostrar o alert (com suporte a web)
+  const showAlert = (title, message) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}: ${message}`);
+    } else {
+      MobileAlert.alert(title, message);
+    }
+  };
+
   // Função para lidar com o login via API utilizando axios
   const handleLogin = async () => {
     try {
@@ -71,70 +76,45 @@ const Login = ({ navigation }) => {
         const data = response.data;
         console.log('Resposta da API:', data);
 
-        // Verifique se o usuario_id existe
         if (data.usuario_id) {
           if (remember) {
-            console.log('Salvando usuario_id:', data.usuario_id);
-            await AsyncStorage.setItem('usuario_id', String(data.usuario_id)); // Salva o usuario_id no AsyncStorage
+            await AsyncStorage.setItem('usuario_id', String(data.usuario_id));
           } else {
-            console.log('Removendo usuario_id');
-            await removeLoginInfo(); // Remove o usuario_id se "Lembrar senha" não estiver marcado
+            await removeLoginInfo();
           }
 
-          // Redefine a navegação e define "Home" como a única tela no histórico
           navigation.reset({
             index: 0,
             routes: [{ name: 'Home', params: { usuario_id: data.usuario_id } }],
           });
         } else {
-          Alert.alert('Erro de Login', 'ID de usuário não encontrado. Tente novamente.');
+          showAlert('Erro de Login', 'ID de usuário não encontrado. Tente novamente.');
         }
       } else {
-        Alert.alert('Erro de Login', 'Credenciais inválidas, tente novamente.');
+        showAlert('Erro de Login', 'Credenciais inválidas, tente novamente.');
       }
     } catch (error) {
       if (error.response) {
-        Alert.alert('Erro de Login', error.response.data.message || 'Credenciais inválidas.');
+        showAlert('Erro de Login', error.response.data.message || 'Credenciais inválidas.');
       } else if (error.request) {
-        Alert.alert('Erro de Conexão', 'Não foi possível conectar ao servidor. Verifique sua conexão ou tente mais tarde.');
+        showAlert('Erro de Conexão', 'Não foi possível conectar ao servidor.');
       } else {
-        Alert.alert('Erro', 'Ocorreu um erro ao fazer login.');
+        showAlert('Erro', 'Ocorreu um erro ao fazer login.');
       }
     }
   };
 
-
-
-
-  useEffect(() => {
-    // Habilitar botão se email e senha estiverem preenchidos corretamente
-    if (email !== '' && password !== '' && validateEmail(email)) {
-      setIsButtonEnabled(true);
-      setEmailError(''); // Limpar erro se o email for válido
-      // Animar o botão para opacidade total
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
+  const handleEmailChange = (emailInput) => {
+    setEmail(emailInput);
+    if (!validateEmail(emailInput)) {
+      setEmailError('Por favor, insira um email válido.');
     } else {
-      setIsButtonEnabled(false);
-      if (email !== '' && !validateEmail(email)) {
-        setEmailError('Por favor, insira um email válido.');
-      } else {
-        setEmailError('');
-      }
-      // Animar o botão para meia opacidade
-      Animated.timing(fadeAnim, {
-        toValue: 0.5,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
+      setEmailError('');
     }
-  }, [email, password]);
+  };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <TouchableWithoutFeedback>
       <View style={styles.background}>
         <StatusBar
           barStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'}
@@ -147,7 +127,7 @@ const Login = ({ navigation }) => {
           imageStyle={styles.imageBackgroundStyle}
         >
           <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            behavior={Platform.select({ ios: 'padding', android: 'height', web: undefined })}
             style={styles.container}
             keyboardVerticalOffset={Platform.select({ ios: 0, android: -150 })}
           >
@@ -158,7 +138,6 @@ const Login = ({ navigation }) => {
               bounces={false}
               scrollEnabled={false}
             >
-              {/* Logo Container */}
               <View style={styles.logoContainer}>
                 <Image
                   source={require('../assets/img/logo.png')}
@@ -167,7 +146,6 @@ const Login = ({ navigation }) => {
                 />
               </View>
 
-              {/* White Container */}
               <View style={styles.whiteContainer}>
                 <View style={styles.titleContainer}>
                   <Text style={styles.title} allowFontScaling={false}>
@@ -180,7 +158,7 @@ const Login = ({ navigation }) => {
                   style={[styles.input, emailError ? styles.inputError : null]}
                   placeholder="Email"
                   value={email}
-                  onChangeText={setEmail}
+                  onChangeText={handleEmailChange}
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -218,7 +196,6 @@ const Login = ({ navigation }) => {
                   </TouchableOpacity>
                 </View>
 
-                {/* Remember Me and Forgot Password */}
                 <View style={styles.rememberContainer}>
                   <View style={styles.checkboxContainer}>
                     <Checkbox
@@ -237,21 +214,13 @@ const Login = ({ navigation }) => {
                   </TouchableOpacity>
                 </View>
 
-                {/* Login Button with animation */}
-                <Animated.View style={{ opacity: fadeAnim, width: '100%' }}>
+                <Animated.View style={{ width: '100%' }}>
                   <TouchableOpacity
-                    style={[
-                      isButtonEnabled ? styles.buttonPrimary : styles.buttonSecondary,
-                    ]}
+                    style={styles.buttonPrimary}
                     onPress={handleLogin}
-                    disabled={!isButtonEnabled}
                   >
                     <Text
-                      style={
-                        isButtonEnabled
-                          ? styles.buttonTextPrimary
-                          : styles.buttonTextSecondary
-                      }
+                      style={styles.buttonTextPrimary}
                       allowFontScaling={false}
                     >
                       Entrar
@@ -259,12 +228,10 @@ const Login = ({ navigation }) => {
                   </TouchableOpacity>
                 </Animated.View>
 
-                {/* Separator Text */}
                 <Text style={styles.separatorText} allowFontScaling={false}>
                   Ou acesse com
                 </Text>
 
-                {/* Social Buttons */}
                 <TouchableOpacity style={styles.buttonSocial}>
                   <Ionicons
                     name="logo-google"
@@ -397,19 +364,14 @@ const styles = StyleSheet.create({
     marginBottom: height * 0.012,
     backgroundColor: '#fff',
   },
+  inputError: {
+    borderColor: 'red',
+  },
   errorText: {
     color: 'red',
     fontSize: width * 0.03,
     marginBottom: height * 0.012,
     alignSelf: 'flex-start',
-  },
-  inputError: {
-    borderColor: 'red', // Borda vermelha quando houver erro
-  },
-  passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
   },
   inputPassword: {
     flex: 1,
@@ -423,6 +385,11 @@ const styles = StyleSheet.create({
       android: width * 0.038,
     }),
     backgroundColor: '#fff',
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
   },
   eyeIcon: {
     position: 'absolute',
@@ -464,24 +431,9 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
-  buttonSecondary: {
-    borderColor: '#1F2024',
-    borderWidth: 1,
-    paddingVertical: height * 0.012,
-    paddingHorizontal: width * 0.1,
-    borderRadius: 30,
-    width: '100%',
-    alignItems: 'center',
-  },
   buttonTextPrimary: {
     fontFamily: 'Nunito_700Bold',
     color: '#F5F5F5',
-    fontSize: width * 0.04,
-    fontWeight: 'bold',
-  },
-  buttonTextSecondary: {
-    fontFamily: 'Nunito_700Bold',
-    color: '#1F2024',
     fontSize: width * 0.04,
     fontWeight: 'bold',
   },
