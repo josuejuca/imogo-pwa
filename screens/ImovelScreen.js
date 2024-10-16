@@ -452,6 +452,7 @@ const styles = StyleSheet.create({
         marginBottom: Platform.select({
             ios: width * 0.05,
             android: width * 0.06,
+            web: width * 0.06,
         }),
     },
     label: {
@@ -490,7 +491,7 @@ const styles = StyleSheet.create({
         tintColor: '#FFFFFF',
         marginLeft: 10, // Espaçamento entre o ícone e o texto
     },
-    
+
     tagContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
