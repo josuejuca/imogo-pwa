@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "pwa",
+    "name": "imoGo PWA",
     "slug": "pwa",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -31,7 +31,7 @@
         "display": "standalone", 
         "background_color": "#ffffff",
         "theme_color": "#000000",
-        "description": "Uma descrição para o seu PWA",
+        "description": "imoGo PWA",
         "icons": [
           {
             "src": "./assets/icon-192.png",
