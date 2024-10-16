@@ -15,14 +15,10 @@ const { width } = Dimensions.get('window');
 // Ícone de seta para voltar
 const BackArrowIcon = () => (
   <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <Mask id="mask0_1_782" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="5" y="0" width="15" height="24">
-      <Path fillRule="evenodd" clipRule="evenodd" d="M18.5489 0.939645C19.151 1.52543 19.151 2.47518 18.5489 3.06097L9.36108 12.0003L18.5489 20.9396C19.151 21.5254 19.151 22.4752 18.5489 23.061C17.9469 23.6468 16.9707 23.6468 16.3686 23.061L5.00049 12.0003L16.3686 0.939645C16.9707 0.353859 17.9469 0.353859 18.5489 0.939645Z" fill="#FB7D10" />
-    </Mask>
-    <G mask="url(#mask0_1_782)">
-      <Rect x="0.000488281" y="-0.00164795" width="24" height="24" fill="#FB7D10" />
-    </G>
+    <Path fillRule="evenodd" clipRule="evenodd" d="M18.5489 0.939645C19.151 1.52543 19.151 2.47518 18.5489 3.06097L9.36108 12.0003L18.5489 20.9396C19.151 21.5254 19.151 22.4752 18.5489 23.061C17.9469 23.6468 16.9707 23.6468 16.3686 23.061L5.00049 12.0003L16.3686 0.939645C16.9707 0.353859 17.9469 0.353859 18.5489 0.939645Z" fill="#FB7D10" />
   </Svg>
 );
+
 
 // Função para formatar o valor como moeda (R$)
 const formatCurrency = (value) => {
@@ -202,6 +198,8 @@ const OneCadastroImovel = ({ route, navigation }) => {
     setSituacao(newSituacao);
   };
 
+  const isWeb = Platform.OS === 'web';
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.headerContainer}>
@@ -223,6 +221,7 @@ const OneCadastroImovel = ({ route, navigation }) => {
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        enabled={Platform.OS !== 'web'}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -438,7 +437,7 @@ const OneCadastroImovel = ({ route, navigation }) => {
                 setDescricao={setDescricao}
               />
               {/* situação do imovel */}
-              <SituacaoImovelSelect onSelect={handleSituacaoChange}/>
+              <SituacaoImovelSelect onSelect={handleSituacaoChange} />
 
               {/* Separador visual (Divisão) */}
               <View style={styles.divider} />
@@ -477,7 +476,6 @@ const OneCadastroImovel = ({ route, navigation }) => {
 
               {/* Valor de venda do imóvel */}
 
-              {/* Valor de venda do imóvel */}
               <View style={styles.row}>
                 <Text style={styles.subLabel} allowFontScaling={false}>Valor de venda do imóvel</Text>
                 <View style={styles.inputContainer}>
@@ -486,13 +484,13 @@ const OneCadastroImovel = ({ route, navigation }) => {
                     placeholder="R$"
                     value={valorVendaImovel}
                     onChangeText={(text) => setValorVendaImovel(formatCurrency(text))}
-                    keyboardType="numeric"
+                    keyboardType={isWeb ? undefined : "numeric"} // Remove o keyboardType para web
+                    type={isWeb ? "number" : undefined} // Adiciona o type="number" para web
                     allowFontScaling={false}
                   />
                 </View>
               </View>
 
-              {/* Valor do condomínio */}
               <View style={styles.row}>
                 <Text style={styles.subLabel} allowFontScaling={false}>Valor do condomínio</Text>
                 <View style={styles.inputContainer}>
@@ -501,13 +499,13 @@ const OneCadastroImovel = ({ route, navigation }) => {
                     placeholder="R$"
                     value={valorCondominio}
                     onChangeText={(text) => setValorCondominio(formatCurrency(text))}
-                    keyboardType="numeric"
+                    keyboardType={isWeb ? undefined : "numeric"} // Remove o keyboardType para web
+                    type={isWeb ? "number" : undefined} // Adiciona o type="number" para web
                     allowFontScaling={false}
                     editable={!naoPossuiCondominio}
                   />
                 </View>
               </View>
-
               {/* Checkbox "Não possui condomínio" */}
               <View style={styles.checkboxRow}>
                 <Checkbox
@@ -556,7 +554,11 @@ const styles = {
     marginBottom: width * 0.055
   },
   headerTitle: {
-    fontSize: width * 0.05,
+    fontSize: Platform.select({
+      ios: width * 0.05,
+      android: width * 0.05,
+      web: width * 0.05,  // Tamanho fixo para web
+    }),
     fontWeight: 'bold',
     color: '#1F2024',
     textAlign: 'center'
@@ -581,7 +583,11 @@ const styles = {
   safeArea: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 40, // Maior espaçamento para a barra de status
+    paddingTop: Platform.select({
+      ios: StatusBar.currentHeight + 10,
+      android: StatusBar.currentHeight + 10,
+      web: 20,  // Adiciona padding extra para a versão web
+    }),
   },
   scrollContainer: {
     paddingVertical: 20,
@@ -618,17 +624,18 @@ const styles = {
   optionGroupSuite: {
     marginLeft: Platform.select({ ios: width * -0.01, android: width * 0.01 }),
     flexDirection: 'row',
-    justifyContent: 'start',
+    justifyContent: 'flex-start',  // Atualizado para 'flex-start'
     alignItems: 'start',
   },
+
   optionButton: {
     borderWidth: 1,
     borderColor: '#E9E9E9',
     borderRadius: 25,
     marginHorizontal: 6,
     backgroundColor: '#E9E9E9',
-    width: Platform.select({ ios: width * 0.11, android: width * 0.11 }),
-    height: Platform.select({ ios: width * 0.11, android: width * 0.11 }),
+    width: Platform.select({ ios: width * 0.11, android: width * 0.11, web: width * 0.11 }),
+    height: Platform.select({ ios: width * 0.11, android: width * 0.11, web: width * 0.11 }),
     justifyContent: 'center',
     alignItems: 'center',
   },
