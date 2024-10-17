@@ -130,12 +130,14 @@ const styles = StyleSheet.create({
         fontSize: Platform.select({
             ios: width * 0.038,
             android: width * 0.038,
+            web: width * 0.038,
         }),
         color: '#1F2024',
         textAlign: 'center',
         marginBottom: Platform.select({
             ios: height * 0.045,
             android: height * 0.04,
+            web: height * 0.04,
         }),
     },
     buttonTextPrimary: {

@@ -42,7 +42,8 @@
     "react-native-web": "~0.19.10",
     "react-native-webview": "13.8.6",
     "stream-browserify": "^3.0.0",
-    "vm-browserify": "^1.1.2"
+    "vm-browserify": "^1.1.2",
+    "expo-file-system": "~16.0.9"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

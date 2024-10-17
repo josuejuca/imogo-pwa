@@ -445,6 +445,21 @@ const styles = StyleSheet.create({
         color: '#FF7A00',
         marginTop: 4,
     },
+
+    // Estilo para web
+    webContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        paddingHorizontal: 20,
+    },
+    webMessage: {
+        fontFamily: 'Nunito_700Bold',
+        fontSize: 24,
+        color: '#1F2024',
+        textAlign: 'center',
+    },
 });
 
 

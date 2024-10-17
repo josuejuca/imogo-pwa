@@ -246,7 +246,7 @@ const Login = ({ navigation }) => {
                     Continuar com Google
                   </Text>
                 </TouchableOpacity>
-
+{/* 
                 <TouchableOpacity style={styles.buttonSocial}>
                   <Ionicons
                     name="logo-facebook"
@@ -275,7 +275,7 @@ const Login = ({ navigation }) => {
                   >
                     Continuar com Apple
                   </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
             </ScrollView>
           </KeyboardAvoidingView>
@@ -344,6 +344,7 @@ const styles = StyleSheet.create({
     fontSize: Platform.select({
       ios: width * 0.055,
       android: width * 0.05,
+      web: width * 0.05,
     }),
     fontWeight: 'bold',
     color: '#1F2024',
@@ -360,8 +361,9 @@ const styles = StyleSheet.create({
     fontSize: Platform.select({
       ios: width * 0.04,
       android: width * 0.038,
+      web: width * 0.038,
     }),
-    marginBottom: height * 0.012,
+    marginBottom: height * 0.022,
     backgroundColor: '#fff',
   },
   inputError: {
@@ -383,10 +385,13 @@ const styles = StyleSheet.create({
     fontSize: Platform.select({
       ios: width * 0.04,
       android: width * 0.038,
+      web: width * 0.038,
     }),
     backgroundColor: '#fff',
+    
   },
   passwordContainer: {
+    marginBottom: height * 0.022,
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
@@ -401,7 +406,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     marginTop: height * 0.01,
-    marginBottom: height * 0.015,
+    marginBottom: height * 0.022,
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -411,6 +416,7 @@ const styles = StyleSheet.create({
     fontSize: Platform.select({
       ios: width * 0.033,
       android: width * 0.032,
+      web: width * 0.032,
     }),
     color: '#FB7D10',
     marginLeft: 10,
@@ -419,6 +425,7 @@ const styles = StyleSheet.create({
     fontSize: Platform.select({
       ios: width * 0.033,
       android: width * 0.032,
+      web: width * 0.032,
     }),
     color: '#FB7D10',
   },
@@ -427,7 +434,7 @@ const styles = StyleSheet.create({
     paddingVertical: height * 0.012,
     paddingHorizontal: width * 0.1,
     borderRadius: 30,
-    marginBottom: height * 0.012,
+    marginBottom: height * 0.022,
     width: '100%',
     alignItems: 'center',
   },
@@ -441,6 +448,7 @@ const styles = StyleSheet.create({
     fontSize: Platform.select({
       ios: width * 0.038,
       android: width * 0.037,
+      web: width * 0.037,
     }),
     color: '#71727A',
     marginVertical: height * 0.015,
