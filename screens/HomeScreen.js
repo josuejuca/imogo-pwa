@@ -10,6 +10,18 @@ import axios from 'axios'; // Importando axios para fazer a requisição à API
 const { width, height } = Dimensions.get('window');
 
 const Home = ({ route, navigation }) => {
+
+    // Verificar se é web e largura da tela
+    if (Platform.OS === 'web' && width > 768) {
+        return (
+            <View style={styles.webContainer}>
+                <Text style={styles.webMessage}>
+                    Este app foi projetado para ser usado em dispositivos móveis. Por favor, acesse-o em um celular.
+                </Text>
+            </View>
+        );
+    }
+    
     const { usuario_id } = route.params || {}; // Obtendo o ID do usuário vindo da tela anterior
 
     const [userInfo, setUserInfo] = useState(null); // Estado para armazenar as informações do usuário

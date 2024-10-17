@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Alert, Image, View, Text, TouchableOpacity, TextInput, ScrollView, StatusBar, Dimensions, SafeAreaView, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { Alert, Image, View, Text, TouchableOpacity, TextInput, ScrollView, StatusBar, SafeAreaView, Platform, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Dimensions } from 'react-native';
 import axios from 'axios';
-import Svg, { Path, G, Rect, Mask, Ellipse, ClipPath } from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
+
 const { width } = Dimensions.get('window');
 
 // Ícone de seta para voltar
@@ -13,6 +14,13 @@ const BackArrowIcon = () => (
 
 const EnderecoScreen = ({ route, navigation }) => {
     const { id, classificacao = '', tipo = '', usuario_id } = route.params || {};
+
+    // Referências para os inputs
+    const cepInputRef = useRef(null);
+    const enderecoInputRef = useRef(null);
+    const complementoInputRef = useRef(null);
+    const bairroInputRef = useRef(null);
+    const cidadeUfInputRef = useRef(null);
 
     // Estado dos campos
     const [cep, setCep] = useState('');
@@ -76,8 +84,6 @@ const EnderecoScreen = ({ route, navigation }) => {
 
             if (response.status === 200) {
                 const { id, usuario_id, status, classificacao, tipo } = response.data;
-                // Redireciona para a outra rota, passando os dados relevantes
-                console.log("Status (cep): ", status)
                 navigation.navigate('CadastroImovel', {
                     id,
                     usuario_id,
@@ -89,7 +95,6 @@ const EnderecoScreen = ({ route, navigation }) => {
                 Alert.alert('Erro', 'Ocorreu um erro ao atualizar o endereço.');
             }
         } catch (error) {
-
             Alert.alert('Erro', 'Não foi possível atualizar o endereço.');
         }
     };
@@ -102,9 +107,7 @@ const EnderecoScreen = ({ route, navigation }) => {
                 </TouchableOpacity>
                 <Text style={styles.headerTitle} allowFontScaling={false}>{classificacao} - {tipo}</Text>
             </View>
-            <Text style={styles.classificacaoText} allowFontScaling={false}>
-                Endereço do imóvel
-            </Text>
+            <Text style={styles.classificacaoText} allowFontScaling={false}>Endereço do imóvel</Text>
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -112,66 +115,89 @@ const EnderecoScreen = ({ route, navigation }) => {
                             {/* CEP */}
                             <View style={styles.row}>
                                 <Text style={styles.subLabel} allowFontScaling={false}>CEP</Text>
-                                <TextInput
-                                    allowFontScaling={false}
-                                    style={styles.areaInput}
-                                    placeholder="00000-000"
-                                    value={cep}
-                                    onChangeText={handleCepChange}
-                                    keyboardType="numeric"
-                                    maxLength={9}
-                                />
+                                <TouchableWithoutFeedback onPress={() => cepInputRef.current.focus()}>
+                                    <View style={styles.inputContainer}>
+                                        <TextInput
+                                            ref={cepInputRef}
+                                            allowFontScaling={false}
+                                            style={styles.areaInput}
+                                            placeholder="00000-000"
+                                            value={cep}
+                                            onChangeText={handleCepChange}
+                                            keyboardType="numeric"
+                                            maxLength={9}
+                                        />
+                                    </View>
+                                </TouchableWithoutFeedback>
                             </View>
 
                             {/* Endereço */}
                             <View style={styles.row}>
                                 <Text style={styles.subLabel} allowFontScaling={false}>Endereço</Text>
-                                <TextInput
-                                    allowFontScaling={false}
-                                    style={styles.areaInput}
-                                    placeholder="Rua, Avenida..."
-                                    value={endereco}
-                                    onChangeText={setEndereco}
-                                />
+                                <TouchableWithoutFeedback onPress={() => enderecoInputRef.current.focus()}>
+                                    <View style={styles.inputContainer}>
+                                        <TextInput
+                                            ref={enderecoInputRef}
+                                            allowFontScaling={false}
+                                            style={styles.areaInput}
+                                            placeholder="Rua, Avenida..."
+                                            value={endereco}
+                                            onChangeText={setEndereco}
+                                        />
+                                    </View>
+                                </TouchableWithoutFeedback>
                             </View>
 
                             {/* Complemento */}
                             <View style={styles.row}>
                                 <Text style={styles.subLabel} allowFontScaling={false}>Complemento (opcional)</Text>
-                                <TextInput
-                                    allowFontScaling={false}
-                                    style={styles.areaInput}
-                                    placeholder="Apto, Bloco..."
-                                    value={complemento}
-                                    onChangeText={setComplemento}
-                                />
+                                <TouchableWithoutFeedback onPress={() => complementoInputRef.current.focus()}>
+                                    <View style={styles.inputContainer}>
+                                        <TextInput
+                                            ref={complementoInputRef}
+                                            allowFontScaling={false}
+                                            style={styles.areaInput}
+                                            placeholder="Apto, Bloco..."
+                                            value={complemento}
+                                            onChangeText={setComplemento}
+                                        />
+                                    </View>
+                                </TouchableWithoutFeedback>
                             </View>
 
                             {/* Bairro */}
-                            <View style={styles.row} >
+                            <View style={styles.row}>
                                 <Text style={styles.subLabel} allowFontScaling={false}>Bairro</Text>
-                                <TextInput
-                                    allowFontScaling={false}
-                                    style={styles.areaInput}
-                                    placeholder="Bairro"
-                                    value={bairro}
-                                    onChangeText={setBairro}
-                                />
+                                <TouchableWithoutFeedback onPress={() => bairroInputRef.current.focus()}>
+                                    <View style={styles.inputContainer}>
+                                        <TextInput
+                                            ref={bairroInputRef}
+                                            allowFontScaling={false}
+                                            style={styles.areaInput}
+                                            placeholder="Bairro"
+                                            value={bairro}
+                                            onChangeText={setBairro}
+                                        />
+                                    </View>
+                                </TouchableWithoutFeedback>
                             </View>
 
-                            {/* Cidade e UF (combinados em um input) */}
+                            {/* Cidade e UF */}
                             <View style={styles.row}>
                                 <Text style={styles.subLabel} allowFontScaling={false}>Cidade/UF</Text>
-                                <TextInput
-                                    allowFontScaling={false}
-                                    style={styles.areaInput}
-                                    placeholder="Cidade/UF"
-                                    value={cidadeUf}
-                                    onChangeText={setCidadeUf}
-                                />
+                                <TouchableWithoutFeedback onPress={() => cidadeUfInputRef.current.focus()}>
+                                    <View style={styles.inputContainer}>
+                                        <TextInput
+                                            ref={cidadeUfInputRef}
+                                            allowFontScaling={false}
+                                            style={styles.areaInput}
+                                            placeholder="Cidade/UF"
+                                            value={cidadeUf}
+                                            onChangeText={setCidadeUf}
+                                        />
+                                    </View>
+                                </TouchableWithoutFeedback>
                             </View>
-
-
 
                             {/* Botão Salvar */}
                             <View style={styles.buttonContainer}>
@@ -187,9 +213,13 @@ const EnderecoScreen = ({ route, navigation }) => {
                                         source={require('../../assets/icons/bookmark.png')} // Ícone de terminar mais tarde
                                         style={styles.laterIcon}
                                     />
-                                    <Text style={styles.laterButtonText} allowFontScaling={false}
+                                    <Text
+                                        style={styles.laterButtonText}
+                                        allowFontScaling={false}
                                         onPress={() => navigation.navigate('Home', { usuario_id })}
-                                    >Terminar mais tarde</Text>
+                                    >
+                                        Terminar mais tarde
+                                    </Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -199,6 +229,7 @@ const EnderecoScreen = ({ route, navigation }) => {
         </SafeAreaView>
     );
 };
+
 
 const styles = {
 

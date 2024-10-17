@@ -199,7 +199,7 @@ const OneCadastroImovel = ({ route, navigation }) => {
   };
 
   const isWeb = Platform.OS === 'web';
-  
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.headerContainer}>
@@ -326,35 +326,47 @@ const OneCadastroImovel = ({ route, navigation }) => {
 
               {/* Inputs de Área */}
               <View style={styles.areaRow}>
+                {/* Área Privativa */}
                 <View style={styles.areaColumn}>
                   <Text style={styles.subLabel} allowFontScaling={false}>Área privativa - m²</Text>
-                  <TextInput
-                    ref={areaPrivativaRef}
-                    style={styles.areaInput}
-                    placeholder="m²"
-                    value={areaPrivativa}
-                    onChangeText={setAreaPrivativa}
-                    returnKeyType="next"
-                    onSubmitEditing={() => areaTotalRef.current.focus()}
-                    blurOnSubmit={false}
-                    keyboardType="numeric"
-                  />
+                  <TouchableWithoutFeedback onPress={() => areaPrivativaRef.current.focus()}>
+                    <View>
+                      <TextInput
+                        ref={areaPrivativaRef}
+                        style={[styles.areaInput, { zIndex: 1 }]}
+                        placeholder="m²"
+                        value={areaPrivativa}
+                        onChangeText={setAreaPrivativa}
+                        returnKeyType="next"
+                        onSubmitEditing={() => areaTotalRef.current.focus()}
+                        blurOnSubmit={false}
+                        keyboardType="numeric"
+                        pointerEvents="auto"
+                      />
+                    </View>
+                  </TouchableWithoutFeedback>
                 </View>
+
+                {/* Área Total */}
                 <View style={styles.areaColumn}>
                   <Text style={styles.subLabel} allowFontScaling={false}>Área total - m²</Text>
-                  <TextInput
-                    ref={areaTotalRef}
-                    style={styles.areaInput}
-                    placeholder="m²"
-                    value={areaTotal}
-                    onChangeText={setAreaTotal}
-                    returnKeyType="done"
-                    onSubmitEditing={Keyboard.dismiss} // Fecha o teclado
-                    keyboardType="numeric"
-                  />
+                  <TouchableWithoutFeedback onPress={() => areaTotalRef.current.focus()}>
+                    <View>
+                      <TextInput
+                        ref={areaTotalRef}
+                        style={[styles.areaInput, { zIndex: 1 }]}
+                        placeholder="m²"
+                        value={areaTotal}
+                        onChangeText={setAreaTotal}
+                        returnKeyType="done"
+                        onSubmitEditing={Keyboard.dismiss}
+                        keyboardType="numeric"
+                        pointerEvents="auto"
+                      />
+                    </View>
+                  </TouchableWithoutFeedback>
                 </View>
               </View>
-
               {/* Exibir os detalhes do imóvel */}
               <View style={styles.row}>
                 <Text style={styles.subLabel} allowFontScaling={false}>Detalhes do Imóvel</Text>
@@ -476,35 +488,43 @@ const OneCadastroImovel = ({ route, navigation }) => {
 
               {/* Valor de venda do imóvel */}
 
+              {/* Valor de venda do imóvel */}
               <View style={styles.row}>
                 <Text style={styles.subLabel} allowFontScaling={false}>Valor de venda do imóvel</Text>
-                <View style={styles.inputContainer}>
-                  <TextInput
-                    style={styles.areaInput}
-                    placeholder="R$"
-                    value={valorVendaImovel}
-                    onChangeText={(text) => setValorVendaImovel(formatCurrency(text))}
-                    keyboardType={isWeb ? undefined : "numeric"} // Remove o keyboardType para web
-                    type={isWeb ? "number" : undefined} // Adiciona o type="number" para web
-                    allowFontScaling={false}
-                  />
-                </View>
+                <TouchableWithoutFeedback onPress={() => { }}>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      style={styles.areaInput}
+                      placeholder="R$"
+                      value={valorVendaImovel}
+                      onChangeText={(text) => setValorVendaImovel(formatCurrency(text))}
+                      keyboardType={isWeb ? undefined : "numeric"} // Remove o keyboardType para web
+                      type={isWeb ? "number" : undefined} // Adiciona o type="number" para web
+                      allowFontScaling={false}
+                      pointerEvents="auto"
+                    />
+                  </View>
+                </TouchableWithoutFeedback>
               </View>
 
+              {/* Valor do condomínio */}
               <View style={styles.row}>
                 <Text style={styles.subLabel} allowFontScaling={false}>Valor do condomínio</Text>
-                <View style={styles.inputContainer}>
-                  <TextInput
-                    style={styles.areaInput}
-                    placeholder="R$"
-                    value={valorCondominio}
-                    onChangeText={(text) => setValorCondominio(formatCurrency(text))}
-                    keyboardType={isWeb ? undefined : "numeric"} // Remove o keyboardType para web
-                    type={isWeb ? "number" : undefined} // Adiciona o type="number" para web
-                    allowFontScaling={false}
-                    editable={!naoPossuiCondominio}
-                  />
-                </View>
+                <TouchableWithoutFeedback onPress={() => { }}>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      style={styles.areaInput}
+                      placeholder="R$"
+                      value={valorCondominio}
+                      onChangeText={(text) => setValorCondominio(formatCurrency(text))}
+                      keyboardType={isWeb ? undefined : "numeric"} // Remove o keyboardType para web
+                      type={isWeb ? "number" : undefined} // Adiciona o type="number" para web
+                      allowFontScaling={false}
+                      editable={!naoPossuiCondominio}
+                      pointerEvents="auto"
+                    />
+                  </View>
+                </TouchableWithoutFeedback>
               </View>
               {/* Checkbox "Não possui condomínio" */}
               <View style={styles.checkboxRow}>

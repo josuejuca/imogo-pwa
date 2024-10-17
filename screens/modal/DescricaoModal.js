@@ -65,7 +65,7 @@ const styles = {
     backgroundColor: '#FFF',
     borderRadius: 10,
     padding: 20,
-    width: Platform.select({ ios: '85%', android: '90%' }),
+    width: Platform.select({ ios: '85%', android: '90%' , web: '90%'}),
     alignItems: 'center',
     paddingTop: 40,
   },

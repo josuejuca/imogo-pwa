@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     Alert,
     Image,
@@ -34,6 +34,12 @@ const BackArrowIcon = () => (
 const DadosProprietarioScreen = ({ route, navigation }) => {
     const { id, classificacao = '', tipo = '', usuario_id, status } = route.params || {};
 
+    // Referências para os inputs
+    const nomeCompletoRef = useRef(null);
+    const cpfRef = useRef(null);
+    const estadoCivilRef = useRef(null);
+    const tipoDocumentoRef = useRef(null);
+
     // Estado dos campos
     const [nomeCompleto, setNomeCompleto] = useState('');
     const [cpf, setCpf] = useState('');
@@ -41,7 +47,6 @@ const DadosProprietarioScreen = ({ route, navigation }) => {
     const [tipoDocumento, setTipoDocumento] = useState('');
 
     // Meu imovel 
-
     const [meuImovel, setmeuImovel] = useState(false);
 
     const togglemeuImovel = () => {
@@ -79,7 +84,7 @@ const DadosProprietarioScreen = ({ route, navigation }) => {
             Alert.alert('Erro', 'Preencha todos os campos obrigatórios.');
             return;
         }
-    
+
         try {
             // Requisição PUT para a API
             const response = await axios.put(`https://imogo.juk.re/api/v1/imoveis/${id}/proprietario`, {
@@ -90,10 +95,8 @@ const DadosProprietarioScreen = ({ route, navigation }) => {
                 usuario_proprietario: meuImovel,
                 status: 4 // Status do cadastro de proprietário
             });
-    
+
             if (response.status === 200) {
-                // Alert.alert('Sucesso', 'Dados salvos com sucesso!');
-                // Aqui você pode redirecionar para a página principal ou outra view, se necessário
                 navigation.navigate('CadastroImovel', {
                     id,
                     usuario_id,
@@ -128,7 +131,7 @@ const DadosProprietarioScreen = ({ route, navigation }) => {
                     <ScrollView contentContainerStyle={styles.scrollContainer}>
                         <View style={styles.container}>
                             {/* Checkbox "Eu sou o proprietário deste imóvel" */}
-                            <TouchableOpacity style={styles.checkboxRow}  onPress={togglemeuImovel}>
+                            <TouchableOpacity style={styles.checkboxRow} onPress={togglemeuImovel}>
                                 <Checkbox
                                     value={meuImovel}
                                     onValueChange={togglemeuImovel}
@@ -139,48 +142,50 @@ const DadosProprietarioScreen = ({ route, navigation }) => {
 
                             {/* Nome Completo */}
                             <View style={styles.row}>
-                                <Text style={styles.subLabel} allowFontScaling={false}>
-                                    Nome Completo
-                                </Text>
-                                <TextInput
-                                    allowFontScaling={false}
-                                    style={styles.areaInput}
-                                    placeholder="Nome Completo"
-                                    value={nomeCompleto}
-                                    onChangeText={setNomeCompleto}
-                                />
+                                <Text style={styles.subLabel} allowFontScaling={false}>Nome Completo</Text>
+                                <TouchableWithoutFeedback onPress={() => nomeCompletoRef.current.focus()}>
+                                    <View style={styles.inputContainer}>
+                                        <TextInput
+                                            ref={nomeCompletoRef}
+                                            allowFontScaling={false}
+                                            style={styles.areaInput}
+                                            placeholder="Nome Completo"
+                                            value={nomeCompleto}
+                                            onChangeText={setNomeCompleto}
+                                        />
+                                    </View>
+                                </TouchableWithoutFeedback>
                             </View>
 
                             {/* CPF com máscara */}
                             <View style={styles.row}>
-                                <Text style={styles.subLabel} allowFontScaling={false}>
-                                    CPF
-                                </Text>
-                                <MaskInput
-                                    allowFontScaling={false}
-                                    style={styles.areaInput}
-                                    value={cpf}
-                                    onChangeText={setCpf}
-                                    mask={Masks.BRL_CPF}
-                                    keyboardType="numeric"
-                                    placeholder="000.000.000-00"
-                                />
+                                <Text style={styles.subLabel} allowFontScaling={false}>CPF</Text>
+                                <TouchableWithoutFeedback onPress={() => cpfRef.current.focus()}>
+                                    <View style={styles.inputContainer}>
+                                        <MaskInput
+                                            ref={cpfRef}
+                                            allowFontScaling={false}
+                                            style={styles.areaInput}
+                                            value={cpf}
+                                            onChangeText={setCpf}
+                                            mask={Masks.BRL_CPF}
+                                            keyboardType="numeric"
+                                            placeholder="000.000.000-00"
+                                        />
+                                    </View>
+                                </TouchableWithoutFeedback>
                             </View>
 
                             {/* Estado Civil */}
                             <View style={styles.row}>
-                                <Text style={styles.subLabel} allowFontScaling={false}>
-                                    Estado Civil
-                                </Text>
-                                <TouchableOpacity
-                                    style={styles.areaInput}
-                                    onPress={() => setShowEstadoCivilOptions(!showEstadoCivilOptions)}
-                                >
-                                    <Text allowFontScaling={false}>
-                                        {estadoCivil ? estadoCivil : 'Selecionar'}
-                                    </Text>
-                                </TouchableOpacity>
-
+                                <Text style={styles.subLabel} allowFontScaling={false}>Estado Civil</Text>
+                                <TouchableWithoutFeedback onPress={() => setShowEstadoCivilOptions(!showEstadoCivilOptions)}>
+                                    <View style={styles.inputContainer}>
+                                        <Text allowFontScaling={false} style={styles.areaInput}>
+                                            {estadoCivil ? estadoCivil : 'Selecionar'}
+                                        </Text>
+                                    </View>
+                                </TouchableWithoutFeedback>
                                 {showEstadoCivilOptions && (
                                     <View style={styles.optionsContainer}>
                                         {estadoCivilOptions.map((option) => (
@@ -198,18 +203,14 @@ const DadosProprietarioScreen = ({ route, navigation }) => {
 
                             {/* Tipo de Documento */}
                             <View style={styles.row}>
-                                <Text style={styles.subLabel} allowFontScaling={false}>
-                                    Tipo de Documento
-                                </Text>
-                                <TouchableOpacity
-                                    style={styles.areaInput}
-                                    onPress={() => setShowTipoDocumentoOptions(!showTipoDocumentoOptions)}
-                                >
-                                    <Text allowFontScaling={false}>
-                                        {tipoDocumento ? tipoDocumento : 'Selecionar'}
-                                    </Text>
-                                </TouchableOpacity>
-
+                                <Text style={styles.subLabel} allowFontScaling={false}>Tipo de Documento</Text>
+                                <TouchableWithoutFeedback onPress={() => setShowTipoDocumentoOptions(!showTipoDocumentoOptions)}>
+                                    <View style={styles.inputContainer}>
+                                        <Text allowFontScaling={false} style={styles.areaInput}>
+                                            {tipoDocumento ? tipoDocumento : 'Selecionar'}
+                                        </Text>
+                                    </View>
+                                </TouchableWithoutFeedback>
                                 {showTipoDocumentoOptions && (
                                     <View style={styles.optionsContainer}>
                                         {tipoDocumentoOptions.map((option) => (
@@ -232,9 +233,7 @@ const DadosProprietarioScreen = ({ route, navigation }) => {
                                     onPress={handleSaveImovel}
                                     disabled={!isFormValid()}
                                 >
-                                    <Text style={styles.saveButtonText} allowFontScaling={false}>
-                                        Salvar
-                                    </Text>
+                                    <Text style={styles.saveButtonText} allowFontScaling={false}>Salvar</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.laterButton}>
                                     <Image
