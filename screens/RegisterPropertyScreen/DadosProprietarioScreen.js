@@ -151,6 +151,7 @@ const DadosProprietarioScreen = ({ route, navigation }) => {
                                             style={styles.areaInput}
                                             placeholder="Nome Completo"
                                             value={nomeCompleto}
+                                            placeholderTextColor="#A9A9A9"
                                             onChangeText={setNomeCompleto}
                                         />
                                     </View>
@@ -169,6 +170,7 @@ const DadosProprietarioScreen = ({ route, navigation }) => {
                                             value={cpf}
                                             onChangeText={setCpf}
                                             mask={Masks.BRL_CPF}
+                                            placeholderTextColor="#A9A9A9"
                                             keyboardType="numeric"
                                             placeholder="000.000.000-00"
                                         />
