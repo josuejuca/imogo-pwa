@@ -122,6 +122,7 @@ const EnderecoScreen = ({ route, navigation }) => {
                                             allowFontScaling={false}
                                             style={styles.areaInput}
                                             placeholder="00000-000"
+                                            placeholderTextColor="#A9A9A9"
                                             value={cep}
                                             onChangeText={handleCepChange}
                                             keyboardType="numeric"
@@ -141,6 +142,7 @@ const EnderecoScreen = ({ route, navigation }) => {
                                             allowFontScaling={false}
                                             style={styles.areaInput}
                                             placeholder="Rua, Avenida..."
+                                            placeholderTextColor="#A9A9A9"
                                             value={endereco}
                                             onChangeText={setEndereco}
                                         />
@@ -158,6 +160,7 @@ const EnderecoScreen = ({ route, navigation }) => {
                                             allowFontScaling={false}
                                             style={styles.areaInput}
                                             placeholder="Apto, Bloco..."
+                                            placeholderTextColor="#A9A9A9"
                                             value={complemento}
                                             onChangeText={setComplemento}
                                         />
@@ -174,6 +177,7 @@ const EnderecoScreen = ({ route, navigation }) => {
                                             ref={bairroInputRef}
                                             allowFontScaling={false}
                                             style={styles.areaInput}
+                                            placeholderTextColor="#A9A9A9"
                                             placeholder="Bairro"
                                             value={bairro}
                                             onChangeText={setBairro}
@@ -188,6 +192,7 @@ const EnderecoScreen = ({ route, navigation }) => {
                                 <TouchableWithoutFeedback onPress={() => cidadeUfInputRef.current.focus()}>
                                     <View style={styles.inputContainer}>
                                         <TextInput
+                                            placeholderTextColor="#A9A9A9"
                                             ref={cidadeUfInputRef}
                                             allowFontScaling={false}
                                             style={styles.areaInput}

@@ -96,7 +96,7 @@ const OneCadastroImovel = ({ route, navigation }) => {
         detalhes_do_condominio: detalhesCondominio,
         formas_pagamento: formasPagamento,
         situacao: situacao,
-        foto_app_capa: 'https://cdn.imogo.com.br/img/banner_imovel_demo.png',
+        foto_app_capa: 'https://cdn.imogo.com.br/img/banner_imovel.png',
       };
 
       // Imprime o payload para verificar os dados
@@ -337,6 +337,7 @@ const OneCadastroImovel = ({ route, navigation }) => {
                         placeholder="m²"
                         value={areaPrivativa}
                         onChangeText={setAreaPrivativa}
+                        placeholderTextColor="#A9A9A9"
                         returnKeyType="next"
                         onSubmitEditing={() => areaTotalRef.current.focus()}
                         blurOnSubmit={false}
@@ -360,6 +361,7 @@ const OneCadastroImovel = ({ route, navigation }) => {
                         onChangeText={setAreaTotal}
                         returnKeyType="done"
                         onSubmitEditing={Keyboard.dismiss}
+                        placeholderTextColor="#A9A9A9"
                         keyboardType="numeric"
                         pointerEvents="auto"
                       />
@@ -501,6 +503,7 @@ const OneCadastroImovel = ({ route, navigation }) => {
                       keyboardType={isWeb ? undefined : "numeric"} // Remove o keyboardType para web
                       type={isWeb ? "number" : undefined} // Adiciona o type="number" para web
                       allowFontScaling={false}
+                      placeholderTextColor="#A9A9A9"
                       pointerEvents="auto"
                     />
                   </View>
@@ -521,6 +524,7 @@ const OneCadastroImovel = ({ route, navigation }) => {
                       type={isWeb ? "number" : undefined} // Adiciona o type="number" para web
                       allowFontScaling={false}
                       editable={!naoPossuiCondominio}
+                      placeholderTextColor="#A9A9A9"
                       pointerEvents="auto"
                     />
                   </View>
