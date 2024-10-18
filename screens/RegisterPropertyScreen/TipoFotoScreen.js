@@ -5,21 +5,25 @@ import {
     View,
     Text,
     TouchableOpacity,
+    TextInput,
     ScrollView,
     Modal,
-    Platform,
+    StatusBar,
+    Dimensions,
     SafeAreaView,
+    Platform,
     KeyboardAvoidingView,
     TouchableWithoutFeedback,
     Keyboard,
     ActivityIndicator
 } from 'react-native';
 import axios from 'axios';
+import Checkbox from 'expo-checkbox';
+import MaskInput, { Masks } from 'react-native-mask-input'; // Para aplicar máscara no CPF
 import Svg, { Path } from 'react-native-svg';
-import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system'; // Importar o FileSystem para conversão base64
-import { Dimensions } from 'react-native'; 
 
+import * as ImagePicker from 'expo-image-picker'; // Importar o ImagePicker
+import * as DocumentPicker from 'expo-document-picker'; // Importar o DocumentPicker
 const { width } = Dimensions.get('window');
 
 // Ícone de seta para voltar
@@ -35,70 +39,74 @@ const BackArrowIcon = () => (
 const TipoFotoScreen = ({ route, navigation }) => {
     const { id, classificacao = '', tipo = '', usuario_id, tipo_documento } = route.params || {};
 
-    const [modalVisible, setModalVisible] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false); // Estado para controlar a visibilidade do modal
+    const [selectedImage, setSelectedImage] = useState(null); // Estado para armazenar o arquivo selecionado
+    const [selectedDocument, setSelectedDocument] = useState(null); // Estado para armazenar o documento selecionado
+    const [galeria, setGaleria] = useState(false);
+    const [loading, setLoading] = useState(false); // Estado para controlar o carregamento
+    // Função para abrir o modal
+    const openModal = () => {
+        setModalVisible(true);
+    };
 
-    const openModal = () => setModalVisible(true);
-    const closeModal = () => setModalVisible(false);
+    // Função para fechar o modal
+    const closeModal = () => {
+        setModalVisible(false);
+    };
 
     // Função para abrir o armazenamento e selecionar um documento (PDF ou outro tipo de arquivo)
+
+    
+    // Função para selecionar documentos na web
     const pickDocument = async () => {
-        try {
-            const result = await DocumentPicker.getDocumentAsync({
-                type: '*/*',
-                copyToCacheDirectory: true,
-            });
-
-            if (result.type === 'cancel') {
-                Alert.alert('Ação cancelada', 'Nenhum documento foi selecionado.');
-                return;
-            }
-
-            if (result.uri) {
-                const documentUri = result.uri;
-                const documentName = result.name || documentUri.split('/').pop();
-
-                // Ler o arquivo em base64
-                const base64Data = await FileSystem.readAsStringAsync(documentUri, {
-                    encoding: FileSystem.EncodingType.Base64
+        if (Platform.OS === 'web') {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'application/pdf';
+            fileInput.onchange = async (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    setSelectedDocument(file);
+                    await sendDocumentToAPI(file);
+                }
+            };
+            fileInput.click();
+        } else {
+            try {
+                const result = await DocumentPicker.getDocumentAsync({
+                    type: 'application/pdf',
+                    copyToCacheDirectory: true,
                 });
 
-                // Converter base64 para binário
-                const binaryData = base64ToBinary(base64Data);
-
-                setLoading(true);
-                await sendDocumentToAPI(binaryData, documentName); 
-            } else {
-                Alert.alert('Erro', 'Não foi possível selecionar o documento. Tente novamente.');
+                if (result.type === 'success') {
+                    setSelectedDocument(result.uri);
+                    await sendDocumentToAPI(result.uri);
+                }
+            } catch (error) {
+                Alert.alert('Erro', 'Ocorreu um erro ao tentar selecionar o documento.');
             }
-        } catch (error) {
-            Alert.alert('Erro', 'Ocorreu um erro ao tentar selecionar o documento.');
-            console.error('Erro no DocumentPicker: ', error);
         }
     };
 
-    // Função para converter base64 para binário
-    const base64ToBinary = (base64) => {
-        const binaryString = atob(base64);
-        const len = binaryString.length;
-        const bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
-        }
-        return bytes;
-    };
-
-    // Função para enviar o documento para a API
-    const sendDocumentToAPI = async (binaryData, documentName) => {
+    // Enviar documento para API
+    const sendDocumentToAPI = async (file) => {
         try {
-            const payload = {
-                cnh_file: binaryData,
-                qr_cnh_file: "", // Preencher conforme o seu caso
-            };
+            setLoading(true);
+            const formData = new FormData();
 
-            const response = await axios.post(`http://192.168.120.185:8000/api/v1/imoveis/${id}/upload_pdf_cnh/`, payload, {
+            if (Platform.OS === 'web') {
+                formData.append('pdf_cnh_file', file, file.name);
+            } else {
+                formData.append('pdf_cnh_file', {
+                    uri: file,
+                    type: 'application/pdf',
+                    name: 'documento.pdf'
+                });
+            }
+
+            const response = await axios.post(`http://imogo.juk.re/api/v1/imoveis/${id}/upload_pdf_cnh/`, formData, {
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'multipart/form-data',
                     'accept': 'application/json',
                 },
             });
@@ -110,16 +118,26 @@ const TipoFotoScreen = ({ route, navigation }) => {
                 throw new Error(`Erro: Código de status ${response.status}`);
             }
         } catch (error) {
-            console.error('Erro ao enviar o documento:', error.response ? error.response.data : error.message);
-            Alert.alert('Erro', 'Falha ao enviar o documento. Tente novamente.');
+            Alert.alert("Erro", "Falha ao enviar a imagem. Tente novamente.");
         } finally {
             setLoading(false);
         }
     };
 
+    const getMimeType = (uri) => {
+        const extension = uri.split('.').pop();
+        if (extension === 'jpg' || extension === 'jpeg') {
+            return 'image/jpeg';
+        } else if (extension === 'png') {
+            return 'image/png';
+        }
+        return 'application/octet-stream';
+    };
+
     const handleNext = (galeriaAtualizada) => {
         navigation.navigate('FotoQRScreen', { tipo_documento, id, classificacao, tipo, usuario_id, galeria: galeriaAtualizada });
-        closeModal();
+        closeModal(); // Fechar o modal
+        console.log({ tipo_documento, id, classificacao, tipo, usuario_id, galeria: galeriaAtualizada })
     };
 
     return (
@@ -139,15 +157,17 @@ const TipoFotoScreen = ({ route, navigation }) => {
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <ScrollView contentContainerStyle={styles.scrollContainer}>
                         <View style={styles.container}>
+
                             <View style={styles.row}>
                                 <Text style={styles.checkboxLabel} allowFontScaling={false}>Selecione uma das opções abaixo</Text>
                             </View>
 
                             <View style={styles.row}>
+                                {/* Os inputs de tirar foto */}
                                 <View style={styles.optionButtonsContainer}>
                                     <TouchableOpacity style={styles.optionButton} onPress={openModal}>
                                         <Image
-                                            source={require('../../assets/icons/upload_file.png')}
+                                            source={require('../../assets/icons/upload_file.png')} // Ícone de "Carregar um arquivo"
                                             style={styles.optionIcon}
                                         />
                                         <View style={styles.optionTextContainer}>
@@ -158,7 +178,7 @@ const TipoFotoScreen = ({ route, navigation }) => {
 
                                     <TouchableOpacity style={styles.optionButton} onPress={() => { handleNext(false); }}>
                                         <Image
-                                            source={require('../../assets/icons/foto_camera.png')}
+                                            source={require('../../assets/icons/foto_camera.png')} // Ícone de "Tirar uma foto"
                                             style={styles.optionIcon}
                                         />
                                         <View style={styles.optionTextContainer}>
@@ -168,6 +188,9 @@ const TipoFotoScreen = ({ route, navigation }) => {
                                     </TouchableOpacity>
                                 </View>
                             </View>
+
+                            {/* Modal */}
+
 
                             <Modal
                                 animationType="slide"
@@ -186,7 +209,7 @@ const TipoFotoScreen = ({ route, navigation }) => {
 
                                                 <TouchableOpacity style={styles.modalOptionButton} onPress={() => { handleNext(true); }}>
                                                     <Image
-                                                        source={require('../../assets/icons/imagem_galeria.png')}
+                                                        source={require('../../assets/icons/imagem_galeria.png')} // Imagem do arquivo
                                                         style={styles.modalIcon}
                                                     />
                                                     <View style={styles.modalOptionTextContainer}>
@@ -199,13 +222,13 @@ const TipoFotoScreen = ({ route, navigation }) => {
 
                                                 <TouchableOpacity style={styles.modalOptionButton} onPress={pickDocument}>
                                                     <Image
-                                                        source={require('../../assets/icons/arquivo.png')}
+                                                        source={require('../../assets/icons/arquivo.png')} // Ícone de documento
                                                         style={styles.modalIcon}
                                                     />
                                                     <View style={styles.modalOptionTextContainer}>
                                                         <Text style={styles.modalOptionText} allowFontScaling={false}>Digital</Text>
                                                         <Text style={styles.modalOptionSubtitle} allowFontScaling={false}>
-                                                            Use um arquivo digital da CNH
+                                                            Use um arquivo em digital da CNH
                                                         </Text>
                                                     </View>
                                                 </TouchableOpacity>
@@ -215,10 +238,11 @@ const TipoFotoScreen = ({ route, navigation }) => {
                                 </TouchableWithoutFeedback>
                             </Modal>
 
+                            {/* Botão Salvar */}
                             <View style={styles.buttonContainer}>
                                 <TouchableOpacity style={styles.laterButton}>
                                     <Image
-                                        source={require('../../assets/icons/bookmark.png')}
+                                        source={require('../../assets/icons/bookmark.png')} // Ícone de terminar mais tarde
                                         style={styles.laterIcon}
                                     />
                                     <Text
@@ -234,11 +258,11 @@ const TipoFotoScreen = ({ route, navigation }) => {
                     </ScrollView>
                 </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
-
+            {/* Modal de carregamento */}
             <Modal transparent={true} animationType="fade" visible={loading}>
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color="#FF7A00" />
-                    <Text style={styles.loadingText}>Enviando documento...</Text>
+                    <Text style={styles.loadingText}>Enviando imagem...</Text>
                 </View>
             </Modal>
         </SafeAreaView>
