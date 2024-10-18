@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard, Platform, StatusBar, Dimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard, Platform, StatusBar, Dimensions, SafeAreaView } from 'react-native';
 import { TextInputMask } from 'react-native-masked-text';
 
 const { width, height } = Dimensions.get('window');
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F5F5F5',
         paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 40, 
       },
-      
+
     container: {
         flex: 1,
         backgroundColor: '#F4F4F4',
