@@ -11,7 +11,7 @@ const ProfileScreen = ({ navigation }) => {
       // Redefine a navegação e define "Login" como a única tela no histórico
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Login' }],
+        routes: [{ name: 'Welcome' }],
       });
     } catch (error) {
       console.error('Error during logout', error);

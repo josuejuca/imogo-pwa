@@ -38,105 +38,114 @@ const SignupScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <StatusBar barStyle="dark-content" />
-            <View style={styles.progressBarContainer}>
-                <View style={styles.progressSegmentHalfFilled}>
-                    <View style={styles.progressSegmentHalfFilledInner}></View>
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
+                <StatusBar barStyle="dark-content" />
+                <View style={styles.progressBarContainer}>
+                    <View style={styles.progressSegmentHalfFilled}>
+                        <View style={styles.progressSegmentHalfFilledInner}></View>
+                    </View>
+                    <View style={styles.progressSegment}></View>
+                    <View style={styles.progressSegment}></View>
                 </View>
-                <View style={styles.progressSegment}></View>
-                <View style={styles.progressSegment}></View>
-            </View>
-            <View style={styles.inputContainer}>
-                <Text style={styles.title} allowFontScaling={false}>Seus dados</Text>
-                <Text style={styles.label} allowFontScaling={false}>Primeiro Nome</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Nome"
-                    value={name}
-                    onChangeText={setName}
-                    returnKeyType="next"
-                    onSubmitEditing={() => handleSubmitEditing(surnameInputRef)}
-                    allowFontScaling={false}
-                />
-            </View>
+                <View style={styles.inputContainer}>
+                    <Text style={styles.title} allowFontScaling={false}>Seus dados</Text>
+                    <Text style={styles.label} allowFontScaling={false}>Primeiro Nome</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Nome"
+                        value={name}
+                        onChangeText={setName}
+                        returnKeyType="next"
+                        onSubmitEditing={() => handleSubmitEditing(surnameInputRef)}
+                        allowFontScaling={false}
+                    />
+                </View>
 
-            <View style={styles.inputContainer}>
-                <Text style={styles.label} allowFontScaling={false}>Sobrenome</Text>
-                <TextInput
-                    ref={surnameInputRef}
-                    style={styles.input}
-                    placeholder="Sobrenome"
-                    value={surname}
-                    onChangeText={setSurname}
-                    returnKeyType="next"
-                    onSubmitEditing={() => handleSubmitEditing(phoneInputRef)}
-                    allowFontScaling={false}
-                />
-            </View>
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label} allowFontScaling={false}>Sobrenome</Text>
+                    <TextInput
+                        ref={surnameInputRef}
+                        style={styles.input}
+                        placeholder="Sobrenome"
+                        value={surname}
+                        onChangeText={setSurname}
+                        returnKeyType="next"
+                        onSubmitEditing={() => handleSubmitEditing(phoneInputRef)}
+                        allowFontScaling={false}
+                    />
+                </View>
 
-            <View style={styles.inputContainer}>
-                <Text style={styles.label} allowFontScaling={false}>Telefone</Text>
-                <TextInputMask
-                    ref={phoneInputRef}
-                    type={'cel-phone'}
-                    options={{
-                        maskType: 'BRL',
-                        withDDD: true,
-                        dddMask: '(99) 9 9999-9999',
-                    }}
-                    style={styles.input}
-                    placeholder="(00) 0 0000-0000"
-                    value={phone}
-                    onChangeText={handlePhoneChange}
-                    keyboardType="phone-pad"
-                    returnKeyType="done"
-                    maxLength={16}
-                    onSubmitEditing={() => Keyboard.dismiss()}
-                    allowFontScaling={false}
-                />
-            </View>
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label} allowFontScaling={false}>Telefone</Text>
+                    <TextInputMask
+                        ref={phoneInputRef}
+                        type={'cel-phone'}
+                        options={{
+                            maskType: 'BRL',
+                            withDDD: true,
+                            dddMask: '(99) 9 9999-9999',
+                        }}
+                        style={styles.input}
+                        placeholder="(00) 0 0000-0000"
+                        value={phone}
+                        onChangeText={handlePhoneChange}
+                        keyboardType="phone-pad"
+                        returnKeyType="done"
+                        maxLength={16}
+                        onSubmitEditing={() => Keyboard.dismiss()}
+                        allowFontScaling={false}
+                    />
+                </View>
 
-            <TouchableOpacity
-                style={[
-                    styles.buttonPrimary,
-                    {
-                        backgroundColor: isButtonEnabled ? '#FB7D10' : '#E9E9E9',
-                        borderWidth: isButtonEnabled ? 0 : 1,
-                        borderColor: isButtonEnabled ? 'transparent' : '#E9E9E9',
-                        opacity: isButtonEnabled ? 1 : 0.5,
-                        shadowColor: isButtonEnabled ? 'transparent' : 'transparent',
-                        shadowOffset: {
-                            width: 0,
-                            height: isButtonEnabled ? 4 : 0,
-                        },
-                        shadowOpacity: isButtonEnabled ? 0.25 : 0,
-                        shadowRadius: isButtonEnabled ? 4.65 : 0,
-                        elevation: isButtonEnabled ? 8 : 0,
-                    }
-                ]}
-                onPress={() => isButtonEnabled && navigation.navigate('SignupEmailScreen', { name, surname, phone })}
-                disabled={!isButtonEnabled}
-            >
-                <Text
+                <TouchableOpacity
                     style={[
-                        styles.buttonText,
+                        styles.buttonPrimary,
                         {
-                            color: isButtonEnabled ? '#F5F5F5' : '#C4C4C4',
+                            backgroundColor: isButtonEnabled ? '#FB7D10' : '#E9E9E9',
+                            borderWidth: isButtonEnabled ? 0 : 1,
+                            borderColor: isButtonEnabled ? 'transparent' : '#E9E9E9',
+                            opacity: isButtonEnabled ? 1 : 0.5,
+                            shadowColor: isButtonEnabled ? 'transparent' : 'transparent',
+                            shadowOffset: {
+                                width: 0,
+                                height: isButtonEnabled ? 4 : 0,
+                            },
+                            shadowOpacity: isButtonEnabled ? 0.25 : 0,
+                            shadowRadius: isButtonEnabled ? 4.65 : 0,
+                            elevation: isButtonEnabled ? 8 : 0,
                         }
                     ]}
-                    allowFontScaling={false}
+                    onPress={() => isButtonEnabled && navigation.navigate('SignupEmailScreen', { name, surname, phone })}
+                    disabled={!isButtonEnabled}
                 >
-                    Próximo
-                </Text>
-            </TouchableOpacity>
-        </View>
+                    <Text
+                        style={[
+                            styles.buttonText,
+                            {
+                                color: isButtonEnabled ? '#F5F5F5' : '#C4C4C4',
+                            }
+                        ]}
+                        allowFontScaling={false}
+                    >
+                        Próximo
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        </SafeAreaView>
     );
 };
 
 export default SignupScreen;
 
 const styles = StyleSheet.create({
+
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#F5F5F5',
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 40, 
+      },
+      
     container: {
         flex: 1,
         backgroundColor: '#F4F4F4',
