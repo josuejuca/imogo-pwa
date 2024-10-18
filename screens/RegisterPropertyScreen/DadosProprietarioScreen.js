@@ -49,12 +49,34 @@ const DadosProprietarioScreen = ({ route, navigation }) => {
     // Meu imovel 
     const [meuImovel, setmeuImovel] = useState(false);
 
-    const togglemeuImovel = () => {
-        setmeuImovel(!meuImovel);
-        if (!meuImovel) {
-            setmeuImovel(true); // Define o valor como 0 quando marcado
+    const togglemeuImovel = async () => {
+        const novoStatus = !meuImovel;
+        setmeuImovel(novoStatus);
+
+        if (novoStatus) {
+            // Fazer chamada à API para buscar dados do proprietário
+            try {
+                const response = await axios.get(`https://imogo.juk.re/api/v1/usuarios/${usuario_id}`);
+                if (response.status === 200) {
+                    const { nome_completo, cpf, estado_civil } = response.data;
+                    // Preencher os campos com os valores retornados pela API, se não forem nulos
+                    setNomeCompleto(nome_completo || '');
+                    setCpf(cpf || '');
+                    setEstadoCivil(estado_civil || '');
+                    setTipoDocumento('Outros'); // Define como padrão se a API for acionada
+                } else {
+                    Alert.alert('Erro', 'Não foi possível buscar os dados do proprietário.');
+                }
+            } catch (error) {
+                console.error(error);
+                Alert.alert('Erro', 'Houve um problema ao buscar os dados. Tente novamente mais tarde.');
+            }
         } else {
-            setmeuImovel(false); // Limpa o valor se desmarcado
+            // Limpar os valores se desmarcado
+            setNomeCompleto('');
+            setCpf('');
+            setEstadoCivil('');
+            setTipoDocumento('');
         }
     };
 
@@ -412,7 +434,7 @@ const styles = {
     areaColumn: {
         width: '48%',
     },
- 
+
 
     // modal 
 
