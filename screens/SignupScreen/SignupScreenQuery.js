@@ -42,7 +42,7 @@ const SurveyScreen = ({ navigation, route }) => {
                 telefone: phone,
                 foto_conta: 'https://juca.eu.org/img/icon_dafault.jpg'
             });
-        
+
             if (response.status === 200) {
                 navigation.navigate('SuccessScreen');
             } else {
@@ -69,56 +69,63 @@ const SurveyScreen = ({ navigation, route }) => {
     };
 
     return (
-        <View style={styles.container}>
-            {/* Barra de Progresso */}
-            <View style={styles.progressBarContainer}>
-                <View style={styles.progressSegmentFilled}></View>
-                <View style={styles.progressSegmentFilled}></View>
-                <View style={styles.progressSegmentHalfFilled}>
-                    <View style={styles.progressSegmentHalfFilledInner}></View>
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
+                {/* Barra de Progresso */}
+                <View style={styles.progressBarContainer}>
+                    <View style={styles.progressSegmentFilled}></View>
+                    <View style={styles.progressSegmentFilled}></View>
+                    <View style={styles.progressSegmentHalfFilled}>
+                        <View style={styles.progressSegmentHalfFilledInner}></View>
+                    </View>
+
                 </View>
-                
+
+                <Text style={styles.subtitle} allowFontScaling={false}>Só mais uma coisa</Text>
+                <Text style={styles.title} allowFontScaling={false}>Como conheceu a imoGo?</Text>
+                <Text style={styles.description} allowFontScaling={false}>Nos conte como chegou até aqui</Text>
+
+                {options.map(option => (
+                    <TouchableOpacity
+                        key={option}
+                        style={[styles.optionButton, selectedOption === option && styles.optionButtonSelected]}
+                        onPress={() => handleOptionPress(option)}
+                    >
+                        <Text style={[styles.optionText, selectedOption === option && styles.optionTextSelected]} allowFontScaling={false}>
+                            {option}
+                        </Text>
+                        {selectedOption === option && (
+                            <Ionicons name="checkmark" size={20} color="#FFF" style={styles.optionIcon} />
+                        )}
+                    </TouchableOpacity>
+                ))}
+
+                <Animated.View style={[styles.buttonContainer, { transform: [{ scale: buttonScale }] }]}>
+                    <TouchableOpacity
+                        style={[styles.buttonPrimary, loading && styles.buttonDisabled]}
+                        onPressIn={handlePressIn}
+                        onPressOut={handlePressOut}
+                        onPress={handleButtonPress}
+                        disabled={loading}
+                    >
+                        <Text style={styles.buttonText} allowFontScaling={false}>
+                            {loading ? 'Criando conta...' : 'Concluir'}
+                        </Text>
+                    </TouchableOpacity>
+                </Animated.View>
             </View>
-
-            <Text style={styles.subtitle} allowFontScaling={false}>Só mais uma coisa</Text>
-            <Text style={styles.title} allowFontScaling={false}>Como conheceu a imoGo?</Text>
-            <Text style={styles.description} allowFontScaling={false}>Nos conte como chegou até aqui</Text>
-
-            {options.map(option => (
-                <TouchableOpacity
-                    key={option}
-                    style={[styles.optionButton, selectedOption === option && styles.optionButtonSelected]}
-                    onPress={() => handleOptionPress(option)}
-                >
-                    <Text style={[styles.optionText, selectedOption === option && styles.optionTextSelected]} allowFontScaling={false}>
-                        {option}
-                    </Text>
-                    {selectedOption === option && (
-                        <Ionicons name="checkmark" size={20} color="#FFF" style={styles.optionIcon} />
-                    )}
-                </TouchableOpacity>
-            ))}
-
-            <Animated.View style={[styles.buttonContainer, { transform: [{ scale: buttonScale }] }]}>
-                <TouchableOpacity
-                    style={[styles.buttonPrimary, loading && styles.buttonDisabled]}
-                    onPressIn={handlePressIn}
-                    onPressOut={handlePressOut}
-                    onPress={handleButtonPress}
-                    disabled={loading}
-                >
-                    <Text style={styles.buttonText} allowFontScaling={false}>
-                        {loading ? 'Criando conta...' : 'Concluir'}
-                    </Text>
-                </TouchableOpacity>
-            </Animated.View>
-        </View>
+        </SafeAreaView>
     );
 };
 
 export default SurveyScreen;
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#F5F5F5',
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 40,
+    },
     container: {
         flex: 1,
         backgroundColor: '#FFF',

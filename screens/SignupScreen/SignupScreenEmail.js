@@ -43,126 +43,131 @@ const SignupEmailScreen = ({ route, navigation }) => {
     const isButtonEnabled = email && !emailError && password && confirmPassword === password && isChecked;
 
     return (
-        <View style={styles.container}>
-            {/* Barra de Progresso */}
-            <View style={styles.progressBarContainer}>
-                <View style={styles.progressSegmentFilled}></View>
-                <View style={styles.progressSegmentHalfFilled}>
-                    <View style={styles.progressSegmentHalfFilledInner}></View>
-                </View>
-                <View style={styles.progressSegment}></View>
-            </View>
-
-            {/* Inputs de E-mail, Senha e Confirmar Senha */}
-            <View style={styles.inputContainer}>
-                <Text style={styles.title} allowFontScaling={false}>Criar cadastro</Text>
-                <Text style={styles.label} allowFontScaling={false}>Email</Text>
-                <TextInput
-                    ref={emailInputRef}
-                    style={[styles.input, emailError && styles.inputError]}
-                    placeholder="exemplo@email.com"
-                    keyboardType="email-address"
-                    value={email}
-                    onChangeText={handleEmailChange}
-                    returnKeyType="next"
-                    onSubmitEditing={() => handleSubmitEditing(passwordInputRef)}
-                    allowFontScaling={false}
-                />
-                {emailError ? <Text style={styles.errorText} allowFontScaling={false}>{emailError}</Text> : null}
-            </View>
-
-            <View style={styles.inputContainer}>
-                <Text style={styles.label} allowFontScaling={false}>Senha</Text>
-                <View style={styles.inputContainerWithIcon}>
-                    <TextInput
-                        ref={passwordInputRef}
-                        style={styles.input}
-                        placeholder="Criar Senha"
-                        secureTextEntry={!passwordVisible}
-                        value={password}
-                        onChangeText={setPassword}
-                        returnKeyType="next"
-                        onSubmitEditing={() => handleSubmitEditing(confirmPasswordInputRef)}
-                        allowFontScaling={false}
-                    />
-                    <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.iconContainer}>
-                        <Ionicons name={passwordVisible ? 'eye-off' : 'eye'} size={24} color="gray" />
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            <View style={styles.inputContainer}>
-                <View style={styles.inputContainerWithIcon}>
-                    <TextInput
-                        ref={confirmPasswordInputRef}
-                        style={styles.input}
-                        placeholder="Confirmar Senha"
-                        secureTextEntry={!passwordVisible}
-                        value={confirmPassword}
-                        onChangeText={handleConfirmPasswordChange}
-                        returnKeyType="done"
-                        onSubmitEditing={() => Keyboard.dismiss()}
-                        allowFontScaling={false}
-                    />
-                    <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.iconContainer}>
-                        <Ionicons name={passwordVisible ? 'eye-off' : 'eye'} size={24} color="gray" />
-                    </TouchableOpacity>
-                </View>
-                {passwordMatchError && <Text style={styles.errorText} allowFontScaling={false}>As senhas não coincidem</Text>}
-            </View>
-
-            {/* Caixa de seleção para Termos e Condições */}
-            <View style={styles.checkboxContainer}>
-                <TouchableOpacity onPress={() => setIsChecked(!isChecked)}>
-                    <View style={[styles.checkbox, isChecked && styles.checkboxChecked]}>
-                        {isChecked && <Ionicons name="checkmark" size={18} color="#FFF" />}
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.container}>
+                {/* Barra de Progresso */}
+                <View style={styles.progressBarContainer}>
+                    <View style={styles.progressSegmentFilled}></View>
+                    <View style={styles.progressSegmentHalfFilled}>
+                        <View style={styles.progressSegmentHalfFilledInner}></View>
                     </View>
-                </TouchableOpacity>
-                <Text style={styles.checkboxLabel} allowFontScaling={false}>
-                    Eu li e estou de acordo com os{' '}
-                    <Text
-                        style={styles.linkText}
-                        onPress={() => Linking.openURL('https://www.exemplo.com/termos')}
-                    >
-                        Termos e Condições
-                    </Text>{' '}
-                    e a{' '}
-                    <Text
-                        style={styles.linkText}
-                        onPress={() => Linking.openURL('https://www.exemplo.com/politica')}
-                    >
-                        Política de Privacidade
-                    </Text>
-                </Text>
-            </View>
+                    <View style={styles.progressSegment}></View>
+                </View>
 
-            {/* Botão de Confirmação */}
-            <TouchableOpacity
-                style={[
-                    styles.buttonPrimary,
-                    {
-                        backgroundColor: isButtonEnabled ? '#FB7D10' : '#E9E9E9',
-                        borderWidth: isButtonEnabled ? 0 : 1,
-                        borderColor: isButtonEnabled ? 'transparent' : '#E9E9E9',
-                        opacity: isButtonEnabled ? 1 : 0.5,
-                        shadowColor: isButtonEnabled ? 'transparent' : 'transparent',
-                        shadowOffset: { width: 0, height: isButtonEnabled ? 4 : 0 },
-                        shadowOpacity: isButtonEnabled ? 0.25 : 0,
-                        shadowRadius: isButtonEnabled ? 4.65 : 0,
-                        elevation: isButtonEnabled ? 8 : 0,
-                    },
-                ]}
-                onPress={() => isButtonEnabled && navigation.navigate('SurveyScreen', { name, surname, email, password, phone })}
-                disabled={!isButtonEnabled}
-            >
-                <Text
-                    style={[styles.buttonText, { color: isButtonEnabled ? '#F5F5F5' : '#C4C4C4' }]}
-                    allowFontScaling={false}
+                {/* Inputs de E-mail, Senha e Confirmar Senha */}
+                <View style={styles.inputContainer}>
+                    <Text style={styles.title} allowFontScaling={false}>Criar cadastro</Text>
+                    <Text style={styles.label} allowFontScaling={false}>Email</Text>
+                    <TextInput
+                        ref={emailInputRef}
+                        style={[styles.input, emailError && styles.inputError]}
+                        placeholder="exemplo@email.com"
+                        keyboardType="email-address"
+                        placeholderTextColor="#A9A9A9"
+                        value={email}
+                        onChangeText={handleEmailChange}
+                        returnKeyType="next"
+                        onSubmitEditing={() => handleSubmitEditing(passwordInputRef)}
+                        allowFontScaling={false}
+                    />
+                    {emailError ? <Text style={styles.errorText} allowFontScaling={false}>{emailError}</Text> : null}
+                </View>
+
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label} allowFontScaling={false}>Senha</Text>
+                    <View style={styles.inputContainerWithIcon}>
+                        <TextInput
+                            ref={passwordInputRef}
+                            style={styles.input}
+                            placeholder="Criar Senha"
+                            placeholderTextColor="#A9A9A9"
+                            secureTextEntry={!passwordVisible}
+                            value={password}
+                            onChangeText={setPassword}
+                            returnKeyType="next"
+                            onSubmitEditing={() => handleSubmitEditing(confirmPasswordInputRef)}
+                            allowFontScaling={false}
+                        />
+                        <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.iconContainer}>
+                            <Ionicons name={passwordVisible ? 'eye-off' : 'eye'} size={24} color="gray" />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                <View style={styles.inputContainer}>
+                    <View style={styles.inputContainerWithIcon}>
+                        <TextInput
+                            ref={confirmPasswordInputRef}
+                            style={styles.input}
+                            placeholder="Confirmar Senha"
+                            secureTextEntry={!passwordVisible}
+                            value={confirmPassword}
+                            onChangeText={handleConfirmPasswordChange}
+                            placeholderTextColor="#A9A9A9"
+                            returnKeyType="done"
+                            onSubmitEditing={() => Keyboard.dismiss()}
+                            allowFontScaling={false}
+                        />
+                        <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.iconContainer}>
+                            <Ionicons name={passwordVisible ? 'eye-off' : 'eye'} size={24} color="gray" />
+                        </TouchableOpacity>
+                    </View>
+                    {passwordMatchError && <Text style={styles.errorText} allowFontScaling={false}>As senhas não coincidem</Text>}
+                </View>
+
+                {/* Caixa de seleção para Termos e Condições */}
+                <View style={styles.checkboxContainer}>
+                    <TouchableOpacity onPress={() => setIsChecked(!isChecked)}>
+                        <View style={[styles.checkbox, isChecked && styles.checkboxChecked]}>
+                            {isChecked && <Ionicons name="checkmark" size={18} color="#FFF" />}
+                        </View>
+                    </TouchableOpacity>
+                    <Text style={styles.checkboxLabel} allowFontScaling={false}>
+                        Eu li e estou de acordo com os{' '}
+                        <Text
+                            style={styles.linkText}
+                            onPress={() => Linking.openURL('https://www.exemplo.com/termos')}
+                        >
+                            Termos e Condições
+                        </Text>{' '}
+                        e a{' '}
+                        <Text
+                            style={styles.linkText}
+                            onPress={() => Linking.openURL('https://www.exemplo.com/politica')}
+                        >
+                            Política de Privacidade
+                        </Text>
+                    </Text>
+                </View>
+
+                {/* Botão de Confirmação */}
+                <TouchableOpacity
+                    style={[
+                        styles.buttonPrimary,
+                        {
+                            backgroundColor: isButtonEnabled ? '#FB7D10' : '#E9E9E9',
+                            borderWidth: isButtonEnabled ? 0 : 1,
+                            borderColor: isButtonEnabled ? 'transparent' : '#E9E9E9',
+                            opacity: isButtonEnabled ? 1 : 0.5,
+                            shadowColor: isButtonEnabled ? 'transparent' : 'transparent',
+                            shadowOffset: { width: 0, height: isButtonEnabled ? 4 : 0 },
+                            shadowOpacity: isButtonEnabled ? 0.25 : 0,
+                            shadowRadius: isButtonEnabled ? 4.65 : 0,
+                            elevation: isButtonEnabled ? 8 : 0,
+                        },
+                    ]}
+                    onPress={() => isButtonEnabled && navigation.navigate('SurveyScreen', { name, surname, email, password, phone })}
+                    disabled={!isButtonEnabled}
                 >
-                    Cadastrar
-                </Text>
-            </TouchableOpacity>
-        </View>
+                    <Text
+                        style={[styles.buttonText, { color: isButtonEnabled ? '#F5F5F5' : '#C4C4C4' }]}
+                        allowFontScaling={false}
+                    >
+                        Cadastrar
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        </SafeAreaView>
     );
 };
 
@@ -174,6 +179,12 @@ const validateEmail = (email) => {
 export default SignupEmailScreen;
 
 const styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#F5F5F5',
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 40,
+    },
+
     container: {
         flex: 1,
         backgroundColor: '#F4F4F4',

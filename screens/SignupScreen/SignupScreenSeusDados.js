@@ -53,6 +53,7 @@ const SignupScreen = ({ navigation }) => {
                     <Text style={styles.label} allowFontScaling={false}>Primeiro Nome</Text>
                     <TextInput
                         style={styles.input}
+                        placeholderTextColor="#A9A9A9"
                         placeholder="Nome"
                         value={name}
                         onChangeText={setName}
@@ -67,6 +68,7 @@ const SignupScreen = ({ navigation }) => {
                     <TextInput
                         ref={surnameInputRef}
                         style={styles.input}
+                        placeholderTextColor="#A9A9A9"
                         placeholder="Sobrenome"
                         value={surname}
                         onChangeText={setSurname}
@@ -92,6 +94,7 @@ const SignupScreen = ({ navigation }) => {
                         onChangeText={handlePhoneChange}
                         keyboardType="phone-pad"
                         returnKeyType="done"
+                        placeholderTextColor="#A9A9A9"
                         maxLength={16}
                         onSubmitEditing={() => Keyboard.dismiss()}
                         allowFontScaling={false}
@@ -143,8 +146,8 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         backgroundColor: '#F5F5F5',
-        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 40, 
-      },
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 40,
+    },
 
     container: {
         flex: 1,
