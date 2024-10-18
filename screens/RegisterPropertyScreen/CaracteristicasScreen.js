@@ -604,14 +604,19 @@ const styles = {
     left: 20,
   },
   //
+  // safeArea: {
+  //   flex: 1,
+  //   backgroundColor: '#F5F5F5',
+  //   paddingTop: Platform.select({
+  //     ios: StatusBar.currentHeight + 10,
+  //     android: StatusBar.currentHeight + 10,
+  //     web: 20,  // Adiciona padding extra para a versão web
+  //   }),
+  // },
   safeArea: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-    paddingTop: Platform.select({
-      ios: StatusBar.currentHeight + 10,
-      android: StatusBar.currentHeight + 10,
-      web: 20,  // Adiciona padding extra para a versão web
-    }),
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 40, 
   },
   scrollContainer: {
     paddingVertical: 20,
