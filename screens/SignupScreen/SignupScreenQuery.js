@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated, Alert, Platform, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Alert, Platform, Dimensions, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 
