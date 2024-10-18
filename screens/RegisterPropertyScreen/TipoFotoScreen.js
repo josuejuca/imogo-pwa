@@ -104,7 +104,7 @@ const TipoFotoScreen = ({ route, navigation }) => {
                 });
             }
 
-            const response = await axios.post(`http://imogo.juk.re/api/v1/imoveis/${id}/upload_pdf_cnh/`, formData, {
+            const response = await axios.post(`https://imogo.juk.re/api/v1/imoveis/${id}/upload_pdf_cnh/`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'accept': 'application/json',
