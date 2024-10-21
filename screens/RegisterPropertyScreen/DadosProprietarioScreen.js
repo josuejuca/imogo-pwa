@@ -249,6 +249,17 @@ const DadosProprietarioScreen = ({ route, navigation }) => {
                                     </View>
                                 )}
                             </View>
+                            {/* texto */}
+                            {!meuImovel && (
+                                <Text style={styles.helperTextEnd}>
+                                    Como você não é o proprietário deste imóvel precisaremos também validar alguns dados seus na sua área de perfil!
+                                </Text>
+                            )}
+                            {meuImovel && (
+                                <Text style={styles.helperTextEnd}>
+                                    Vamos lembrar que você é o proprietário deste imóvel e guardar os seus dados para que não seja preciso pedir novamente!
+                                </Text>
+                            )}
 
                             {/* Botão Salvar */}
                             <View style={styles.buttonContainer}>
@@ -506,6 +517,19 @@ const styles = {
         color: '#7A7A7A',
         marginTop: 5,
     },
+    helperTextEnd: {
+        fontSize: 14, // Ajuste dinâmico baseado na largura da tela (4% da largura)
+        color: '#F5F5F5',
+        backgroundColor: '#C4C4C4', // Ajuste a cor conforme necessário
+        paddingVertical: width * 0.03, // Padding vertical responsivo
+        paddingHorizontal: width * 0.05, // Padding horizontal responsivo
+        borderRadius: 16,
+        marginTop: width * 0.03, // Margin top para espaçamento
+        textAlign: 'center',
+        width: '100%', // Ocupar 90% da largura da tela
+        alignSelf: 'center',
+    },
+
 
     // pagamento 
     divider: {
@@ -554,7 +578,7 @@ const styles = {
         marginBottom: 20,
     },
     saveButtonText: {
-        color: '#FFF',
+        color: '#F5F5F5',
         fontSize: Platform.select({ ios: width * 0.04, android: width * 0.03 }), // Ajuste no tamanho da fonte
         fontWeight: '600',
     },
