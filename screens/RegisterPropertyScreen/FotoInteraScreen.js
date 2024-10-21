@@ -145,7 +145,6 @@ const FotoInteraScreen = ({ route, navigation }) => {
     };
 
     // Função para enviar a imagem para a API
-    // Função para enviar a imagem para a API
     const sendImageToAPI = async (imageUriInteira, imageUriQR) => {
         setLoading(true); // Ativar carregamento enquanto faz a requisição
         try {
@@ -195,7 +194,6 @@ const FotoInteraScreen = ({ route, navigation }) => {
                     }
                 }
 
-                // Log para verificar o conteúdo do formData no mobile
                 console.log("FormData (Mobile):", formData);
                 alert("FormData (Mobile) preparado");
             } else {
@@ -210,7 +208,6 @@ const FotoInteraScreen = ({ route, navigation }) => {
                     formData.append('qr_cnh_file', blobQR, 'qr_cnh_file.jpg');
                 }
 
-                // Log para verificar o conteúdo do formData na web
                 console.log("FormData (Web):", formData);
                 alert("FormData (Web) preparado");
             }
@@ -240,8 +237,12 @@ const FotoInteraScreen = ({ route, navigation }) => {
                 throw new Error(`Erro: Código de status ${response.status}`);
             }
         } catch (error) {
-            console.error('Erro ao enviar a imagem:', error.response ? error.response.data : error.message);
-            alert(`Erro ao enviar a imagem: ${error.response ? JSON.stringify(error.response.data) : error.message}`);
+            console.error('Erro ao enviar a imagem:', error);
+            alert(`Erro ao enviar a imagem: ${error.message}`);
+            if (error.response) {
+                console.error("Detalhes do erro:", error.response.data);
+                alert(`Detalhes do erro: ${JSON.stringify(error.response.data)}`);
+            }
             Alert.alert("Erro", "Falha ao enviar a imagem. Tente novamente.");
         } finally {
             setLoading(false); // Desativar o carregamento após o término
