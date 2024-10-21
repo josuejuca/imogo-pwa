@@ -52,61 +52,89 @@ const FotoQRScreen = ({ route, navigation }) => {
     };
 
 
-    // Função para abrir a galeria e permitir o upload do arquivo (imagem)
+    // Função para abrir a galeria ou câmera na web e dispositivos móveis
     const pickImage = async () => {
-        let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (Platform.OS === 'web') {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*'; // Permitir imagens
+            fileInput.capture = 'camera'; // Sugere o uso da câmera quando suportado
+            fileInput.onchange = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const imageUriQR = URL.createObjectURL(file);
+                    setSelectedImage(imageUriQR);
+                    closeModal();
+                    navigation.navigate('FotoInteraScreen', { imageUriQR, id, classificacao, tipo, usuario_id, tipo_documento, galeria });
+                }
+            };
+            fileInput.click();
+        } else {
+            let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-        if (permissionResult.granted === false) {
-            Alert.alert("Permissão negada", "É necessária a permissão para acessar a galeria.");
-            return;
-        }
+            if (permissionResult.granted === false) {
+                Alert.alert("Permissão negada", "É necessária a permissão para acessar a galeria.");
+                return;
+            }
 
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images, // Apenas imagens
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
 
-        // Verificar se o usuário cancelou a seleção e se há uma imagem selecionada
-        if (!result.canceled && result.assets.length > 0) {
-            const imageUriQR = result.assets[0].uri;
-            setSelectedImage(imageUriQR); // Armazenar o URI da imagem
-            closeModal(); // Fechar o modal
-            // Exibir o URI da imagem no console
-            console.log({ imageUriQR, id, classificacao, tipo, usuario_id, tipo_documento, galeria });
-            navigation.navigate('FotoInteraScreen', { imageUriQR, id, classificacao, tipo, usuario_id, tipo_documento, galeria });
+            if (!result.canceled && result.assets.length > 0) {
+                const imageUriQR = result.assets[0].uri;
+                setSelectedImage(imageUriQR);
+                closeModal();
+                navigation.navigate('FotoInteraScreen', { imageUriQR, id, classificacao, tipo, usuario_id, tipo_documento, galeria });
+            }
         }
     };
 
-    // Função para abrir a câmera e permitir a captura da foto
+    // Função para abrir a câmera na web e dispositivos móveis
     const openCamera = async () => {
-        // Solicitar permissão para usar a câmera
-        let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+        if (Platform.OS === 'web') {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.capture = 'camera'; // Abre a câmera diretamente, se suportado pelo navegador
+            fileInput.onchange = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const imageUriQR = URL.createObjectURL(file);
+                    setSelectedImage(imageUriQR);
+                    closeModal();
+                    navigation.navigate('FotoInteraScreen', { imageUriQR, id, classificacao, tipo, usuario_id, tipo_documento, galeria });
+                }
+            };
+            fileInput.click();
+        } else {
+            let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
 
-        if (permissionResult.granted === false) {
-            Alert.alert("Permissão negada", "É necessária a permissão para acessar a câmera.");
-            return;
-        }
+            if (permissionResult.granted === false) {
+                Alert.alert("Permissão negada", "É necessária a permissão para acessar a câmera.");
+                return;
+            }
 
-        // Abrir a câmera para tirar uma foto
-        let result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images, // Apenas imagens
-            allowsEditing: true, // Permitir edição
-            aspect: [4, 3], // Definir a proporção
-            quality: 1, // Qualidade máxima da imagem
-        });
+            let result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
 
-        // Verificar se o usuário cancelou a seleção e se há uma imagem selecionada
-        if (!result.canceled && result.assets.length > 0) {
-            const imageUriQR = result.assets[0].uri;
-            setSelectedImage(imageUriQR); // Armazenar o URI da imagem
-            closeModal(); // Fechar o modal
-            // Exibir o URI da imagem no console
-            console.log({ imageUriQR, id, classificacao, tipo, usuario_id, tipo_documento, galeria });
-            navigation.navigate('FotoInteraScreen', { imageUriQR, id, classificacao, tipo, usuario_id, tipo_documento, galeria });
+            if (!result.canceled && result.assets.length > 0) {
+                const imageUriQR = result.assets[0].uri;
+                setSelectedImage(imageUriQR);
+                closeModal();
+                navigation.navigate('FotoInteraScreen', { imageUriQR, id, classificacao, tipo, usuario_id, tipo_documento, galeria });
+            }
         }
     };
+
+
 
     // Função para abrir o armazenamento e selecionar um documento (PDF ou outro tipo de arquivo)
     const pickDocument = async () => {

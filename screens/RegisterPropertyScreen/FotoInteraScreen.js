@@ -56,113 +56,162 @@ const FotoInteraScreen = ({ route, navigation }) => {
 
 
     // Função para abrir a galeria e permitir o upload do arquivo (imagem)
+    // Função para abrir a galeria ou câmera na web e dispositivos móveis
     const pickImage = async () => {
-        let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (Platform.OS === 'web') {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.capture = 'camera';
+            fileInput.onchange = async (event) => { // Adicionei `async` aqui
+                const file = event.target.files[0];
+                if (file) {
+                    const imageUriInteira = URL.createObjectURL(file);
+                    setSelectedImage(imageUriInteira);
+                    closeModal();
+                    console.log({ imageUriInteira, imageUriQR, id, classificacao, tipo, usuario_id, tipo_documento, galeria });
+                    setLoading(true);
+                    await sendImageToAPI(imageUriInteira, imageUriQR); // Isso agora é permitido
+                }
+            };
+            fileInput.click();
+        } else {
+            let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-        if (permissionResult.granted === false) {
-            Alert.alert("Permissão negada", "É necessária a permissão para acessar a galeria.");
-            return;
-        }
+            if (permissionResult.granted === false) {
+                Alert.alert("Permissão negada", "É necessária a permissão para acessar a galeria.");
+                return;
+            }
 
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images, // Apenas imagens
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
 
-        // Verificar se o usuário cancelou a seleção e se há uma imagem selecionada
-        if (!result.canceled && result.assets.length > 0) {
-            const imageUriInteira = result.assets[0].uri;
-            setSelectedImage(imageUriInteira); // Armazenar o URI da imagem
-            closeModal(); // Fechar o modal
-            console.log({ imageUriInteira, imageUriQR, id, classificacao, tipo, usuario_id, tipo_documento, galeria });
-
-            // Ativar tela de carregamento e enviar a imagem capturada para a API
-            setLoading(true); // Ativar o carregamento
-            await sendImageToAPI(imageUriInteira, imageUriQR); // Enviar a imagem
+            if (!result.canceled && result.assets.length > 0) {
+                const imageUriInteira = result.assets[0].uri;
+                setSelectedImage(imageUriInteira);
+                closeModal();
+                console.log({ imageUriInteira, imageUriQR, id, classificacao, tipo, usuario_id, tipo_documento, galeria });
+                setLoading(true);
+                await sendImageToAPI(imageUriInteira, imageUriQR);
+            }
         }
     };
 
-    // Função para abrir a câmera e permitir a captura da foto
+    // Função para abrir a câmera na web e dispositivos móveis
     const openCamera = async () => {
-        let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+        if (Platform.OS === 'web') {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.capture = 'camera';
+            fileInput.onchange = async (event) => { // Adicionei `async` aqui
+                const file = event.target.files[0];
+                if (file) {
+                    const imageUriInteira = URL.createObjectURL(file);
+                    setSelectedImage(imageUriInteira);
+                    closeModal();
+                    console.log({ imageUriInteira, imageUriQR, id, classificacao, tipo, usuario_id, tipo_documento, galeria });
+                    setLoading(true);
+                    await sendImageToAPI(imageUriInteira, imageUriQR); // Isso agora é permitido
+                }
+            };
+            fileInput.click();
+        } else {
+            let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
 
-        if (permissionResult.granted === false) {
-            Alert.alert("Permissão negada", "É necessária a permissão para acessar a câmera.");
-            return;
-        }
+            if (permissionResult.granted === false) {
+                Alert.alert("Permissão negada", "É necessária a permissão para acessar a câmera.");
+                return;
+            }
 
-        let result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images, // Apenas imagens
-            allowsEditing: true, // Permitir edição
-            aspect: [4, 3], // Definir a proporção
-            quality: 1, // Qualidade máxima da imagem
-        });
+            let result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            });
 
-        // Verificar se o usuário cancelou a seleção e se há uma imagem selecionada
-        if (!result.canceled && result.assets.length > 0) {
-            const imageUriInteira = result.assets[0].uri;
-            setSelectedImage(imageUriInteira); // Armazenar o URI da imagem
-            closeModal(); // Fechar o modal
-            console.log({ imageUriInteira, imageUriQR, id, classificacao, tipo, usuario_id, tipo_documento, galeria });
-
-            // Ativar tela de carregamento e enviar a imagem capturada para a API
-            setLoading(true); // Ativar o carregamento
-            await sendImageToAPI(imageUriInteira, imageUriQR); // Enviar a imagem
+            if (!result.canceled && result.assets.length > 0) {
+                const imageUriInteira = result.assets[0].uri;
+                setSelectedImage(imageUriInteira);
+                closeModal();
+                console.log({ imageUriInteira, imageUriQR, id, classificacao, tipo, usuario_id, tipo_documento, galeria });
+                setLoading(true);
+                await sendImageToAPI(imageUriInteira, imageUriQR);
+            }
         }
     };
 
+
+
+    // Função para enviar a imagem para a API
     // Função para enviar a imagem para a API
     const sendImageToAPI = async (imageUriInteira, imageUriQR) => {
         setLoading(true); // Ativar carregamento enquanto faz a requisição
         try {
             const formData = new FormData();
-    
+
             const cnhMimeType = getMimeType(imageUriInteira);
             const qrMimeType = imageUriQR ? getMimeType(imageUriQR) : null;
-    
+
             let apiUrl = ''; // Variável para armazenar o endpoint correto
-    
+
             if (tipo_documento === 'CNH') {
                 // Adicionar o arquivo CNH ao FormData
                 formData.append('cnh_file', {
                     uri: imageUriInteira,
                     type: cnhMimeType,
-                    name: `cnh_file.${cnhMimeType.split('/')[1]}`,
+                    name: `cnh_file.${cnhMimeType.split('/')[1]}` // Certifique-se de que a extensão esteja correta
                 });
-    
+
                 if (imageUriQR) {
                     formData.append('qr_cnh_file', {
                         uri: imageUriQR,
                         type: qrMimeType,
-                        name: `qr_cnh_file.${qrMimeType.split('/')[1]}`,
+                        name: `qr_cnh_file.${qrMimeType.split('/')[1]}` // Certifique-se de que a extensão esteja correta
                     });
                 }
-    
+
                 apiUrl = `https://imogo.juk.re/api/v1/imoveis/${id}/upload_cnh/`; // Endpoint para CNH
             } else {
-                
                 // Adicionar o arquivo RG ao FormData
                 formData.append('rg_costa_file', {
                     uri: imageUriInteira,
                     type: cnhMimeType,
-                    name: `rg_costa_file.${cnhMimeType.split('/')[1]}`,
+                    name: `rg_costa_file.${cnhMimeType.split('/')[1]}` // Certifique-se de que a extensão esteja correta
                 });
 
                 if (imageUriQR) {
                     formData.append('rg_frente_file', {
                         uri: imageUriQR,
                         type: qrMimeType,
-                        name: `rg_frente_file.${qrMimeType.split('/')[1]}`,
+                        name: `rg_frente_file.${qrMimeType.split('/')[1]}` // Certifique-se de que a extensão esteja correta
                     });
                 }
-    
+
                 apiUrl = `https://imogo.juk.re/api/v1/imoveis/${id}/upload_rg/`; // Endpoint para RG
             }
-    
+
+            // Ajuste para diferenciar a versão web
+            if (Platform.OS === 'web') {
+                // Para a web, usamos diretamente o arquivo Blob para o FormData
+                const response = await fetch(imageUriInteira);
+                const blob = await response.blob();
+                formData.set('cnh_file', blob, 'cnh_file.jpg'); // Ajuste aqui para o nome e extensão correta
+
+                if (imageUriQR) {
+                    const responseQR = await fetch(imageUriQR);
+                    const blobQR = await responseQR.blob();
+                    formData.set('qr_cnh_file', blobQR, 'qr_cnh_file.jpg'); // Ajuste aqui para o nome e extensão correta
+                }
+            }
+
             console.log('FormData:', formData); // Log para verificar o conteúdo do formData
-    
+
             // Fazer a requisição para o endpoint correto
             const response = await axios.post(apiUrl, formData, {
                 headers: {
@@ -170,7 +219,7 @@ const FotoInteraScreen = ({ route, navigation }) => {
                     'accept': 'application/json',
                 },
             });
-    
+
             if (response.status === 200) {
                 const { id, usuario_id, status, classificacao, tipo } = response.data;
                 navigation.navigate('CadastroImovel', { status: 5, id, classificacao, tipo, usuario_id });
@@ -185,9 +234,8 @@ const FotoInteraScreen = ({ route, navigation }) => {
             setLoading(false); // Desativar o carregamento após o término
         }
     };
-    
 
-
+    // Função para obter o MIME Type com base na extensão
     const getMimeType = (uri) => {
         const extension = uri.split('.').pop();
         if (extension === 'jpg' || extension === 'jpeg') {
@@ -197,6 +245,7 @@ const FotoInteraScreen = ({ route, navigation }) => {
         }
         return 'application/octet-stream';
     };
+
 
     // Função para abrir o armazenamento e selecionar um documento (PDF ou outro tipo de arquivo)
     const pickDocument = async () => {
