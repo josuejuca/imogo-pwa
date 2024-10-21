@@ -145,6 +145,7 @@ const FotoInteraScreen = ({ route, navigation }) => {
     };
 
     // Função para enviar a imagem para a API
+    // Função para enviar a imagem para a API
     const sendImageToAPI = async (imageUriInteira, imageUriQR) => {
         setLoading(true); // Ativar carregamento enquanto faz a requisição
         try {
@@ -152,6 +153,15 @@ const FotoInteraScreen = ({ route, navigation }) => {
 
             // Versão para dispositivos móveis
             if (Platform.OS !== 'web') {
+                // Garantir que estamos obtendo um arquivo legível para a API
+                const fileInfo = await FileSystem.getInfoAsync(imageUriInteira);
+                console.log("File Info:", fileInfo);
+                alert(`File Info: ${JSON.stringify(fileInfo)}`);
+
+                if (!fileInfo.exists) {
+                    throw new Error("Arquivo não encontrado");
+                }
+
                 const cnhMimeType = getMimeType(imageUriInteira);
                 const qrMimeType = imageUriQR ? getMimeType(imageUriQR) : null;
 
@@ -184,6 +194,10 @@ const FotoInteraScreen = ({ route, navigation }) => {
                         });
                     }
                 }
+
+                // Log para verificar o conteúdo do formData no mobile
+                console.log("FormData (Mobile):", formData);
+                alert("FormData (Mobile) preparado");
             } else {
                 // Versão para Web
                 const response = await fetch(imageUriInteira);
@@ -195,11 +209,18 @@ const FotoInteraScreen = ({ route, navigation }) => {
                     const blobQR = await responseQR.blob();
                     formData.append('qr_cnh_file', blobQR, 'qr_cnh_file.jpg');
                 }
+
+                // Log para verificar o conteúdo do formData na web
+                console.log("FormData (Web):", formData);
+                alert("FormData (Web) preparado");
             }
 
             const apiUrl = tipo_documento === 'CNH'
                 ? `https://imogo.juk.re/api/v1/imoveis/${id}/upload_cnh/`
                 : `https://imogo.juk.re/api/v1/imoveis/${id}/upload_rg/`;
+
+            console.log("Sending to API:", apiUrl);
+            alert(`Sending to API: ${apiUrl}`);
 
             const response = await axios.post(apiUrl, formData, {
                 headers: {
@@ -207,6 +228,9 @@ const FotoInteraScreen = ({ route, navigation }) => {
                     'accept': 'application/json',
                 },
             });
+
+            console.log("API Response:", response);
+            alert(`API Response: ${JSON.stringify(response.data)}`);
 
             if (response.status === 200) {
                 const { id, usuario_id, status, classificacao, tipo } = response.data;
@@ -217,6 +241,7 @@ const FotoInteraScreen = ({ route, navigation }) => {
             }
         } catch (error) {
             console.error('Erro ao enviar a imagem:', error.response ? error.response.data : error.message);
+            alert(`Erro ao enviar a imagem: ${error.response ? JSON.stringify(error.response.data) : error.message}`);
             Alert.alert("Erro", "Falha ao enviar a imagem. Tente novamente.");
         } finally {
             setLoading(false); // Desativar o carregamento após o término
