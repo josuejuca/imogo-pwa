@@ -21,6 +21,7 @@ import Svg, { Path } from 'react-native-svg';
 import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker'; // Importar o ImagePicker
 import * as DocumentPicker from 'expo-document-picker'; // Importar o DocumentPicker
+import * as FileSystem from 'expo-file-system';
 const { width } = Dimensions.get('window');
 
 // Ícone de seta para voltar
@@ -53,17 +54,14 @@ const FotoInteraScreen = ({ route, navigation }) => {
         setModalVisible(false);
     };
 
-
-
-    // Função para abrir a galeria e permitir o upload do arquivo (imagem)
     // Função para abrir a galeria ou câmera na web e dispositivos móveis
     const pickImage = async () => {
         if (Platform.OS === 'web') {
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
             fileInput.accept = 'image/*';
-            fileInput.capture = 'camera';
-            fileInput.onchange = async (event) => { // Adicionei `async` aqui
+            fileInput.capture = 'environment';
+            fileInput.onchange = async (event) => {
                 const file = event.target.files[0];
                 if (file) {
                     const imageUriInteira = URL.createObjectURL(file);
@@ -71,7 +69,7 @@ const FotoInteraScreen = ({ route, navigation }) => {
                     closeModal();
                     console.log({ imageUriInteira, imageUriQR, id, classificacao, tipo, usuario_id, tipo_documento, galeria });
                     setLoading(true);
-                    await sendImageToAPI(imageUriInteira, imageUriQR); // Isso agora é permitido
+                    await sendImageToAPI(imageUriInteira, imageUriQR);
                 }
             };
             fileInput.click();
@@ -101,14 +99,14 @@ const FotoInteraScreen = ({ route, navigation }) => {
         }
     };
 
-    // Função para abrir a câmera na web e dispositivos móveis
+    // Função para abrir a câmera e permitir a captura da foto
     const openCamera = async () => {
         if (Platform.OS === 'web') {
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
             fileInput.accept = 'image/*';
             fileInput.capture = 'camera';
-            fileInput.onchange = async (event) => { // Adicionei `async` aqui
+            fileInput.onchange = async (event) => {
                 const file = event.target.files[0];
                 if (file) {
                     const imageUriInteira = URL.createObjectURL(file);
@@ -116,7 +114,7 @@ const FotoInteraScreen = ({ route, navigation }) => {
                     closeModal();
                     console.log({ imageUriInteira, imageUriQR, id, classificacao, tipo, usuario_id, tipo_documento, galeria });
                     setLoading(true);
-                    await sendImageToAPI(imageUriInteira, imageUriQR); // Isso agora é permitido
+                    await sendImageToAPI(imageUriInteira, imageUriQR);
                 }
             };
             fileInput.click();
@@ -146,73 +144,63 @@ const FotoInteraScreen = ({ route, navigation }) => {
         }
     };
 
-
-
-    // Função para enviar a imagem para a API
     // Função para enviar a imagem para a API
     const sendImageToAPI = async (imageUriInteira, imageUriQR) => {
         setLoading(true); // Ativar carregamento enquanto faz a requisição
         try {
             const formData = new FormData();
 
-            const cnhMimeType = getMimeType(imageUriInteira);
-            const qrMimeType = imageUriQR ? getMimeType(imageUriQR) : null;
+            // Versão para dispositivos móveis
+            if (Platform.OS !== 'web') {
+                const cnhMimeType = getMimeType(imageUriInteira);
+                const qrMimeType = imageUriQR ? getMimeType(imageUriQR) : null;
 
-            let apiUrl = ''; // Variável para armazenar o endpoint correto
-
-            if (tipo_documento === 'CNH') {
-                // Adicionar o arquivo CNH ao FormData
-                formData.append('cnh_file', {
-                    uri: imageUriInteira,
-                    type: cnhMimeType,
-                    name: `cnh_file.${cnhMimeType.split('/')[1]}` // Certifique-se de que a extensão esteja correta
-                });
-
-                if (imageUriQR) {
-                    formData.append('qr_cnh_file', {
-                        uri: imageUriQR,
-                        type: qrMimeType,
-                        name: `qr_cnh_file.${qrMimeType.split('/')[1]}` // Certifique-se de que a extensão esteja correta
+                if (tipo_documento === 'CNH') {
+                    formData.append('cnh_file', {
+                        uri: imageUriInteira,
+                        type: cnhMimeType,
+                        name: `cnh_file.${cnhMimeType.split('/')[1]}`,
                     });
-                }
 
-                apiUrl = `https://imogo.juk.re/api/v1/imoveis/${id}/upload_cnh/`; // Endpoint para CNH
+                    if (imageUriQR) {
+                        formData.append('qr_cnh_file', {
+                            uri: imageUriQR,
+                            type: qrMimeType,
+                            name: `qr_cnh_file.${qrMimeType.split('/')[1]}`,
+                        });
+                    }
+                } else {
+                    formData.append('rg_costa_file', {
+                        uri: imageUriInteira,
+                        type: cnhMimeType,
+                        name: `rg_costa_file.${cnhMimeType.split('/')[1]}`,
+                    });
+
+                    if (imageUriQR) {
+                        formData.append('rg_frente_file', {
+                            uri: imageUriQR,
+                            type: qrMimeType,
+                            name: `rg_frente_file.${qrMimeType.split('/')[1]}`,
+                        });
+                    }
+                }
             } else {
-                // Adicionar o arquivo RG ao FormData
-                formData.append('rg_costa_file', {
-                    uri: imageUriInteira,
-                    type: cnhMimeType,
-                    name: `rg_costa_file.${cnhMimeType.split('/')[1]}` // Certifique-se de que a extensão esteja correta
-                });
-
-                if (imageUriQR) {
-                    formData.append('rg_frente_file', {
-                        uri: imageUriQR,
-                        type: qrMimeType,
-                        name: `rg_frente_file.${qrMimeType.split('/')[1]}` // Certifique-se de que a extensão esteja correta
-                    });
-                }
-
-                apiUrl = `https://imogo.juk.re/api/v1/imoveis/${id}/upload_rg/`; // Endpoint para RG
-            }
-
-            // Ajuste para diferenciar a versão web
-            if (Platform.OS === 'web') {
-                // Para a web, usamos diretamente o arquivo Blob para o FormData
+                // Versão para Web
                 const response = await fetch(imageUriInteira);
                 const blob = await response.blob();
-                formData.set('cnh_file', blob, 'cnh_file.jpg'); // Ajuste aqui para o nome e extensão correta
+                formData.append('cnh_file', blob, 'cnh_file.jpg');
 
                 if (imageUriQR) {
                     const responseQR = await fetch(imageUriQR);
                     const blobQR = await responseQR.blob();
-                    formData.set('qr_cnh_file', blobQR, 'qr_cnh_file.jpg'); // Ajuste aqui para o nome e extensão correta
+                    formData.append('qr_cnh_file', blobQR, 'qr_cnh_file.jpg');
                 }
             }
 
-            console.log('FormData:', formData); // Log para verificar o conteúdo do formData
+            const apiUrl = tipo_documento === 'CNH'
+                ? `https://imogo.juk.re/api/v1/imoveis/${id}/upload_cnh/`
+                : `https://imogo.juk.re/api/v1/imoveis/${id}/upload_rg/`;
 
-            // Fazer a requisição para o endpoint correto
             const response = await axios.post(apiUrl, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -245,7 +233,6 @@ const FotoInteraScreen = ({ route, navigation }) => {
         }
         return 'application/octet-stream';
     };
-
 
     // Função para abrir o armazenamento e selecionar um documento (PDF ou outro tipo de arquivo)
     const pickDocument = async () => {
@@ -436,10 +423,7 @@ const styles = {
         width: '100%',
     },
 
-
-
     // salvar 
-
 
     inputContainer: {
         width: '100%',

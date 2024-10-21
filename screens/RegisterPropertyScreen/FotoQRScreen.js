@@ -53,13 +53,14 @@ const FotoQRScreen = ({ route, navigation }) => {
 
 
     // Função para abrir a galeria ou câmera na web e dispositivos móveis
+    // Função para abrir a galeria e permitir o upload do arquivo (imagem)
     const pickImage = async () => {
         if (Platform.OS === 'web') {
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
-            fileInput.accept = 'image/*'; // Permitir imagens
-            fileInput.capture = 'camera'; // Sugere o uso da câmera quando suportado
-            fileInput.onchange = (event) => {
+            fileInput.accept = 'image/*';
+            fileInput.capture = 'environment'; // Sugere abrir a câmera traseira
+            fileInput.onchange = async (event) => {
                 const file = event.target.files[0];
                 if (file) {
                     const imageUriQR = URL.createObjectURL(file);
@@ -93,14 +94,14 @@ const FotoQRScreen = ({ route, navigation }) => {
         }
     };
 
-    // Função para abrir a câmera na web e dispositivos móveis
+    // Função para abrir a câmera e permitir a captura da foto
     const openCamera = async () => {
         if (Platform.OS === 'web') {
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
             fileInput.accept = 'image/*';
-            fileInput.capture = 'camera'; // Abre a câmera diretamente, se suportado pelo navegador
-            fileInput.onchange = (event) => {
+            fileInput.capture = 'camera'; // Garante que a câmera seja aberta, se possível
+            fileInput.onchange = async (event) => {
                 const file = event.target.files[0];
                 if (file) {
                     const imageUriQR = URL.createObjectURL(file);
@@ -158,7 +159,7 @@ const FotoQRScreen = ({ route, navigation }) => {
         } else {
             setTextoDocumento("Tirar foto");
         }
-    }, [galeria]);  // O useEffect só é acionado quando "galeria" muda
+    }, [galeria]);  // O useEffect só é acionado quando "galeria" muda 
 
     useEffect(() => {
         if (tipo_documento != 'CNH') {
