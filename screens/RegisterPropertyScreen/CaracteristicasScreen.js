@@ -102,7 +102,7 @@ const OneCadastroImovel = ({ route, navigation }) => {
       // Imprime o payload para verificar os dados
       console.log("Payload:", payload);
 
-      const response = await axios.post('https://imogo.juk.re/api/v1/imoveis/', payload);
+      const response = await axios.post('https://imogo.juk.re/api/v1/imoveis/caracteristicas', payload);
       if (response.status === 200) {
         const { id, usuario_id, status, classificacao, tipo } = response.data;
         console.log("Status (caracteristicas): ", status)

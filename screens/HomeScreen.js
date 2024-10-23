@@ -78,6 +78,8 @@ const Home = ({ route, navigation }) => {
         );
     }
 
+
+    const status_user = userInfo?.status
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
@@ -114,7 +116,7 @@ const Home = ({ route, navigation }) => {
                     </View>
                 ) : (
                     <View style={styles.welcomeContainer}>
-                        <Text style={styles.welcomeText} allowFontScaling={false}>Meus imóveis</Text>
+                        <Text style={styles.welcomeText} allowFontScaling={false}>Meus imóveis {status_user}</Text>
                     </View>
                 )}
 
@@ -131,7 +133,7 @@ const Home = ({ route, navigation }) => {
                             </TouchableOpacity>
                         </View>
                     ) : (
-                        <ImoveisList usuario_id={usuario_id} navigation={navigation} />
+                        <ImoveisList usuario_id={usuario_id} status_user={status_user} navigation={navigation} />
                     )}
                 </View>
 
@@ -181,6 +183,7 @@ const Home = ({ route, navigation }) => {
                     setModalVisible={setClassificationModalVisible}
                     categoria={categoria}
                     usuario_id={usuario_id}
+                    status_user={status_user}
                     setSelectedTipo={setTipoImovel}
                     navigation={navigation}
                 />

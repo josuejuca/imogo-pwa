@@ -86,6 +86,7 @@ const styles = StyleSheet.create({
         paddingTop: Platform.select({
             ios: height * 0.05,
             android: height * 0.05,
+            web: height * 0.05,
         }),
         alignItems: 'center',
     },
@@ -93,10 +94,12 @@ const styles = StyleSheet.create({
         marginTop: Platform.select({
             ios: height * 0.02, // Espaço menor no iOS
             android: height * 0.015, // Espaço menor no Android
+            web: height * 0.015,
         }),
         margin:Platform.select({
             ios: height * 0.02, // Espaço menor no iOS
             android: height * 0.015, // Espaço menor no Android
+            web: height * 0.015,
         }),
         flexDirection: 'row',
         justifyContent: 'space-between',

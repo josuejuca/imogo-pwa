@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -20,8 +20,11 @@ import { Ionicons } from '@expo/vector-icons';
 import Checkbox from 'expo-checkbox';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
 
 const { width, height } = Dimensions.get('window');
+WebBrowser.maybeCompleteAuthSession();
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -29,8 +32,98 @@ const Login = ({ navigation }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [remember, setRemember] = useState(true);
   const [emailError, setEmailError] = useState('');
-
   const fadeAnim = useRef(new Animated.Value(0.5)).current;
+
+  // Configuração do login com Google
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId: "SEU_ANDROID_CLIENT_ID",
+    iosClientId: "SEU_IOS_CLIENT_ID",
+    webClientId: "9139107305-8u2mcvrl6cr63uvjdjip4j6622mu9kit.apps.googleusercontent.com",
+  });
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      const { authentication } = response;
+      if (authentication?.accessToken) {
+        getUserInfo(authentication.accessToken);
+      }
+    }
+  }, [response]);
+
+  const getUserInfo = async (token) => {
+    try {
+      const userInfoResponse = await fetch("https://www.googleapis.com/userinfo/v2/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const userInfo = await userInfoResponse.json();
+  
+      // Exibindo um alerta com o e-mail do usuário autenticado
+      showAlert("Login bem-sucedido", `Bem-vindo, ${userInfo.name}`);
+      console.log(userInfo);
+  
+      // Preparar os dados para enviar à API
+      const googleLoginData = {
+        id_google: userInfo.id,
+        nome: userInfo.name,
+        email: userInfo.email,
+        foto_conta: userInfo.picture,
+      };
+  
+      // Enviar dados para a API e fazer login
+      await handleGoogleLogin(googleLoginData);
+    } catch (error) {
+      showAlert("Erro de Login", "Não foi possível obter informações do usuário.");
+    }
+  };
+  
+  // Função para fazer o login via Google na API
+  const handleGoogleLogin = async (googleData) => {
+    try {
+      // Verifique se todos os campos estão presentes e são válidos
+      if (!googleData.id_google || !googleData.nome || !googleData.email || !googleData.foto_conta) {
+        showAlert('Erro de Login', 'Informações incompletas recebidas do Google.');
+        return;
+      }
+  
+      // Fazer a requisição POST para a API com os dados como query parameters
+      const response = await axios.post(`http://192.168.120.185:8000/api/v1/login/google`, null, {
+        params: {
+          id_google: googleData.id_google,
+          nome: googleData.nome,
+          email: googleData.email,
+          foto_conta: googleData.foto_conta,
+        },
+      });
+  
+      if (response.status === 200) {
+        const data = response.data;
+        console.log('Resposta da API Google:', data);
+  
+        if (data.usuario_id) {
+          await saveLoginInfo(String(data.usuario_id));
+  
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Home', params: { usuario_id: data.usuario_id } }],
+          });
+        } else {
+          showAlert('Erro de Login', 'ID de usuário não encontrado. Tente novamente.');
+        }
+      } else {
+        showAlert('Erro de Login', 'Não foi possível concluir o login com o Google.');
+      }
+    } catch (error) {
+      if (error.response) {
+        console.log('Erro de Resposta da API:', error.response.data);
+        showAlert('Erro de Login', error.response.data.detail || 'Erro ao fazer login com o Google.');
+      } else if (error.request) {
+        showAlert('Erro de Conexão', 'Não foi possível conectar ao servidor.');
+      } else {
+        showAlert('Erro', 'Ocorreu um erro ao fazer login com o Google.');
+      }
+    }
+  };
+  
 
   // Validação de email usando regex
   const validateEmail = (email) => {
@@ -232,7 +325,10 @@ const Login = ({ navigation }) => {
                   Ou acesse com
                 </Text>
 
-                <TouchableOpacity style={styles.buttonSocial}>
+                <TouchableOpacity
+                  style={styles.buttonSocial}
+                  onPress={() => promptAsync()}
+                >
                   <Ionicons
                     name="logo-google"
                     size={24}
@@ -246,36 +342,6 @@ const Login = ({ navigation }) => {
                     Continuar com Google
                   </Text>
                 </TouchableOpacity>
-{/* 
-                <TouchableOpacity style={styles.buttonSocial}>
-                  <Ionicons
-                    name="logo-facebook"
-                    size={24}
-                    color="#3B5998"
-                    style={styles.socialIcon}
-                  />
-                  <Text
-                    style={styles.buttonTextSocial}
-                    allowFontScaling={false}
-                  >
-                    Continuar com Facebook
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.buttonSocial}>
-                  <Ionicons
-                    name="logo-apple"
-                    size={24}
-                    color="#000"
-                    style={styles.socialIcon}
-                  />
-                  <Text
-                    style={styles.buttonTextSocial}
-                    allowFontScaling={false}
-                  >
-                    Continuar com Apple
-                  </Text>
-                </TouchableOpacity> */}
               </View>
             </ScrollView>
           </KeyboardAvoidingView>

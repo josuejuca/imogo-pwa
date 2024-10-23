@@ -142,7 +142,7 @@ const DadosProprietarioScreen = ({ route, navigation }) => {
                     <BackArrowIcon />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle} allowFontScaling={false}>
-                    {classificacao} - {tipo}
+                   Cadastro do proprietario
                 </Text>
             </View>
             <Text style={styles.classificacaoText} allowFontScaling={false}>
@@ -153,15 +153,7 @@ const DadosProprietarioScreen = ({ route, navigation }) => {
                     <ScrollView contentContainerStyle={styles.scrollContainer}>
                         <View style={styles.container}>
                             {/* Checkbox "Eu sou o proprietário deste imóvel" */}
-                            <TouchableOpacity style={styles.checkboxRow} onPress={togglemeuImovel}>
-                                <Checkbox
-                                    value={meuImovel}
-                                    onValueChange={togglemeuImovel}
-                                    color={meuImovel ? '#FB7D10' : undefined}
-                                />
-                                <Text style={styles.checkboxLabel} allowFontScaling={false} >Eu sou o proprietário deste imóvel</Text>
-                            </TouchableOpacity>
-
+                            
                             {/* Nome Completo */}
                             <View style={styles.row}>
                                 <Text style={styles.subLabel} allowFontScaling={false}>Nome Completo</Text>
@@ -249,18 +241,7 @@ const DadosProprietarioScreen = ({ route, navigation }) => {
                                     </View>
                                 )}
                             </View>
-                            {/* texto */}
-                            {!meuImovel && (
-                                <Text style={styles.helperTextEnd}>
-                                    Como você não é o proprietário deste imóvel precisaremos também validar alguns dados seus na sua área de perfil!
-                                </Text>
-                            )}
-                            {meuImovel && (
-                                <Text style={styles.helperTextEnd}>
-                                    Vamos lembrar que você é o proprietário deste imóvel e guardar os seus dados para que não seja preciso pedir novamente!
-                                </Text>
-                            )}
-
+                    
                             {/* Botão Salvar */}
                             <View style={styles.buttonContainer}>
                                 <TouchableOpacity

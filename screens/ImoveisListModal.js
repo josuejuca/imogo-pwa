@@ -3,7 +3,7 @@ import { View, FlatList, StyleSheet, Text, ActivityIndicator, RefreshControl } f
 import axios from 'axios'; // Importando axios
 import ImovelCard from './ImovelCardModal';
 
-const ImoveisList = ({ usuario_id, navigation }) => {
+const ImoveisList = ({ usuario_id, navigation, status_user }) => {
   const [imoveis, setImoveis] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false); // Estado para controlar o pull to refresh
@@ -17,6 +17,7 @@ const ImoveisList = ({ usuario_id, navigation }) => {
         usuario_id: imovel.usuario_id,
         status: imovel.status, // Agora estamos usando IdStatus para o status numérico
         imagem: imovel.foto_app_capa,
+        status_user: status_user,
         valor: imovel.valor_venda ? formatCurrency(imovel.valor_venda) : 'Valor não informado',
         localizacao: imovel.cidade && imovel.uf ? `${imovel.endereco} | ${imovel.bairro} - ${imovel.cidade}/${imovel.uf}` : 'Finalize o Cadastro',
       }));

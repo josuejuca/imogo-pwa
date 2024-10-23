@@ -55,8 +55,8 @@ const CheckIcon = () => (
 );
 
 const CadastroImovel = ({ route, navigation }) => {
-  const { id = null, status = 1, classificacao = '', tipo = '', usuario_id } = route.params || {};
-  
+  const { id = null, status = 1, classificacao = '', tipo = '', usuario_id, status_user } = route.params || {};
+
   const [imovel, setImovel] = useState({ id, status, classificacao, tipo, usuario_id });
   const [loading, setLoading] = useState(false);
 
@@ -100,7 +100,8 @@ const CadastroImovel = ({ route, navigation }) => {
         id: imovel.id,
         classificacao: imovel.classificacao,
         tipo: imovel.tipo,
-        usuario_id: usuario_id
+        usuario_id: usuario_id, 
+        status_user: status_user
       });
     }
   };
@@ -108,9 +109,11 @@ const CadastroImovel = ({ route, navigation }) => {
   const steps = [
     { label: 'Características', status: 1, view: 'PreCaracteristicasScreen' },
     { label: 'Endereço do imóvel', status: 2, view: 'PreEnderecoScreen' },
-    { label: 'Dados do proprietário', status: 3, view: 'PreDadosProprietario' },
-    { label: 'Foto do Documento', status: 4, view: 'PreDocumentoScreen' },
-    { label: 'Selfie do proprietário', status: 5, view: 'PreSelfieScreen' },
+    ...(status_user < 3 ? [
+      { label: 'Dados do proprietário', status: 3, view: 'PreDadosProprietario' },
+      { label: 'Foto do Documento', status: 4, view: 'PreDocumentoScreen' },
+      { label: 'Selfie do proprietário', status: 5, view: 'PreSelfieScreen' }
+    ] : [])
   ];
 
   if (loading) {
@@ -124,14 +127,14 @@ const CadastroImovel = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home', {usuario_id})} style={styles.backButton}>
+        <TouchableOpacity onPress={() => navigation.navigate('Home', { usuario_id })} style={styles.backButton}>
           <BackArrowIcon />
         </TouchableOpacity>
         <Text style={styles.headerTitle} allowFontScaling={false}>Cadastro do imóvel</Text>
       </View>
 
       <Text style={styles.classificacaoText} allowFontScaling={false}>
-        {imovel.classificacao} - {imovel.tipo}
+        {imovel.classificacao} - {imovel.tipo} | {status_user}
       </Text>
 
       <View style={styles.stepsContainer}>
@@ -165,7 +168,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 40, 
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 40,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -210,7 +213,7 @@ const styles = StyleSheet.create({
   stepLine: {
     position: 'absolute',
     left: 12,
-    top: 25, 
+    top: 25,
     height: 40,
     width: 2,
     backgroundColor: '#D3D3D3',

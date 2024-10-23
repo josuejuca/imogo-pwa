@@ -13,7 +13,7 @@ const BackArrowIcon = () => (
 );
 
 const EnderecoScreen = ({ route, navigation }) => {
-    const { id, classificacao = '', tipo = '', usuario_id } = route.params || {};
+    const { id, classificacao = '', tipo = '', usuario_id, status_user } = route.params || {};
 
     // Referências para os inputs
     const cepInputRef = useRef(null);
@@ -114,7 +114,7 @@ const EnderecoScreen = ({ route, navigation }) => {
                         <View style={styles.container}>
                             {/* CEP */}
                             <View style={styles.row}>
-                                <Text style={styles.subLabel} allowFontScaling={false}>CEP</Text>
+                                <Text style={styles.subLabel} allowFontScaling={false}>CEP : {status_user}</Text>
                                 <TouchableWithoutFeedback onPress={() => cepInputRef.current.focus()}>
                                     <View style={styles.inputContainer}>
                                         <TextInput

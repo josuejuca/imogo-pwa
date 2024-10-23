@@ -4,7 +4,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, Platform, 
 const { width, height } = Dimensions.get('window');
 
 const PreEnderecoScreen = ({ navigation, route }) => {
-    const { id = null, status, classificacao = '', tipo = '', usuario_id} = route.params || {};
+    const { id = null, status, classificacao = '', tipo = '', usuario_id, status_user} = route.params || {};
     return (
         
         <SafeAreaView style={styles.container}>
@@ -27,11 +27,11 @@ const PreEnderecoScreen = ({ navigation, route }) => {
 
             <Text style={styles.title} allowFontScaling={false}>Agora preencha o endereço do imóvel</Text>
             <Text style={styles.description} allowFontScaling={false}>
-                [Espaço reservado para o texto] #{id}
+                [Espaço reservado para o texto] #{id} | {status_user}
              </Text>            
             <TouchableOpacity
                 style={styles.buttonPrimary}
-                onPress={() => navigation.navigate('EnderecoScreen', {id, classificacao, tipo, usuario_id, usuario_id, status})} // Ajuste para a navegação correta
+                onPress={() => navigation.navigate('EnderecoScreen', {id, classificacao, tipo, usuario_id, usuario_id, status, status_user})} // Ajuste para a navegação correta
             >
                 <Text style={styles.buttonText} allowFontScaling={false}>Preencher endereço</Text>
             </TouchableOpacity>

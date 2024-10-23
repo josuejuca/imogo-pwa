@@ -88,7 +88,7 @@ const getDescription = (status) => {
 
 const ImovelCard = ({ imovel }) => {
   const navigation = useNavigation(); // Hook useNavigation para obter o objeto navigation
-  const { status, valor, localizacao, id, imagem, usuario_id } = imovel; // Incluímos o ID do imóvel aqui
+  const { status, valor, localizacao, id, imagem, usuario_id, status_user } = imovel; // Incluímos o ID do imóvel aqui
   const { progress, stages, color } = getProgressBar(status);
   const description = getDescription(status);
   const icon = getStatusIcon(status);
@@ -97,7 +97,7 @@ const ImovelCard = ({ imovel }) => {
   const handleNavigation = () => {
     if (status >= 1 && status <= 9) {
       // Redireciona para CadastroImovel se o status estiver entre 1 e 9
-      navigation.navigate('CadastroImovel', { id, status, usuario_id });
+      navigation.navigate('CadastroImovel', { id, status, usuario_id, status_user });
     } else {
       // Redireciona para ImovelDetalhe para status acima de 9
       navigation.navigate('ImovelScreen', { id, status, usuario_id });
