@@ -86,7 +86,7 @@ const Login = ({ navigation }) => {
       }
   
       // Fazer a requisição POST para a API com os dados como query parameters
-      const response = await axios.post(`http://192.168.120.185:8000/api/v1/login/google`, null, {
+      const response = await axios.post(`https://imogo.juk.re/api/v1/login/google`, null, {
         params: {
           id_google: googleData.id_google,
           nome: googleData.nome,
